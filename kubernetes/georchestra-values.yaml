@@ -1,0 +1,79 @@
+# Values for Superset app
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nodeSelector:
+  georchestra: "true"
+
+extraEnvRaw: 
+    - name: SUPERSET_APP_ROOT
+      value: "/dash"
+    - name: SUPERSET_LOAD_EXAMPLES
+      value: "no"
+
+
+secretEnv:
+  # rather use an externally created secret since it seems we need to override the default one if 
+  # using our own pg DB
+  create: true
+# envFromSecret: mysecrets-superset-secrets
+
+# Enable example data & dashboards (includes a config section see below)
+# extraConfigs: 
+#   import_datasources.yaml: |
+#       databases:
+#       - allow_file_upload: true
+#         allow_ctas: true
+#         allow_cvas: true
+#         database_name: example
+#         extra: "{\r\n    \"metadata_params\": {},\r\n    \"engine_params\": {},\r\n    \"\
+#           metadata_cache_timeout\": {},\r\n    \"schemas_allowed_for_file_upload\": []\r\n\
+#           }"
+#         sqlalchemy_uri: sqlite:////app/superset_home/examples.db?check_same_thread=false
+#         tables: []
+
+# configOverridesFiles: 
+#   georchestra_customizations: /home/jean/dev/pigeo/helmfiles/georchestra/superset_config/GeorchestraCustomizations.py
+
+image:
+  repository: georchestra/superset
+  tag: 20250127-1041-c87416467
+  pullPolicy: Always
+  # repository: apache/superset
+  # tag: 4.1.1-dev
+
+supersetNode:
+  startupProbe: 
+    httpGet:
+        path: /dash/health
+  livenessProbe: 
+    httpGet:
+        path: /dash/health
+  readinessProbe: 
+    httpGet:
+        path: /dash/health
+
+postgresql:
+  # Use geOrchestra's PostgreSQL app DB
+  # You have to create a dedicated schema, user and give this user access 
+  # only to this schema, using search_path
+  enabled: true
+
+######################################
+# geOrchestra custom Superset config
+######################################
+# You can paste here the content of the files in config folder.
+# But the recommended way is to provide those values through helm --set-file
+# option. Look at the README.md
+
+# extraSecrets: 
+#   LocalizationFr.py: |
+#     # Custom some settings for FR locale
+#     # Import it from config/LocalizationFr.py file
+
+#   GeorchestraCustomizations.py: |
+#     # Import it from config/GeorchestraCustomizations.py file
+
+# configOverrides: 
+#   customconfig: |
+#     # Import it from config/superset_georchestra_config.py file
