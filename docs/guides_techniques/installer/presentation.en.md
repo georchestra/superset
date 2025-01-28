@@ -2,8 +2,10 @@
 
 ## Component Architecture
 
-Introduction to the component hierarchy.
+See https://superset.apache.org/docs/installation/architecture.
 
 ## Recommendation
 
-Recommendation on the installation architecture.
+!!! note "Note"
+
+    Please first read through this whole document before proceeding, as there is some background knowledge to acquire.

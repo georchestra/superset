@@ -2,8 +2,8 @@
 
 ## Hardware
 
-5 GB RAM, 2 CPUs, 10 GB disk space, etc.
+See https://superset.apache.org/docs/faq#what-are-the-computing-specifications-required-to-run-superset.
 
 ## Software
 
-List the dependencies on libraries or software.
+A running geOrchestra instance.

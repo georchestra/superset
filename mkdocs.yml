@@ -68,7 +68,9 @@ nav:
             - guides_techniques/installer/presentation.md
             - guides_techniques/installer/prerequis.md
             - guides_techniques/installer/preparation.md
-            - guides_techniques/installer/installation.md
+            - guides_techniques/installer/install-kubernetes.md
+            - guides_techniques/installer/install-docker.md
+            - guides_techniques/installer/install-manual.md
             - guides_techniques/installer/configuration.md
             - guides_techniques/installer/debug.md
             - guides_techniques/installer/tests.md
@@ -106,11 +108,11 @@ plugins:
             default: true
             name: Français
             build: true
-            site_name: "Template pour la documentation d'un composant geOrchestra"
+            site_name: "Tableaux de bords et graphiques pour geOrchestra"
           - locale: en
             name: English
             build: true
-            site_name: "Documentation template for a geOrchestra component"
+            site_name: "geOrchestra dashboards and dataviz"
             nav_translations:
               Accueil: "Home"
               Guide utilisateur: "User guide"
