@@ -62,4 +62,12 @@ georchestra:
       ...
       superset:
         target: ${georchestra.gateway.services.superset.target}
+        headers:
+          proxy: true
+          username: true
+          roles: true
+          email: true
+          firstname: true
+          lastname: true
 ```
+It is important that the gateway provides at least the username, the roles and the email. First and last names are good to have.
