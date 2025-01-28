@@ -15,8 +15,8 @@ extraEnvRaw:
 secretEnv:
   # rather use an externally created secret since it seems we need to override the default one if 
   # using our own pg DB
-  create: true
-# envFromSecret: mysecrets-superset-secrets
+  create: false
+  envFromSecret: my-georchestra-custom-superset-secret
 
 # Enable example data & dashboards (includes a config section see below)
 # extraConfigs: 
@@ -32,15 +32,9 @@ secretEnv:
 #         sqlalchemy_uri: sqlite:////app/superset_home/examples.db?check_same_thread=false
 #         tables: []
 
-# configOverridesFiles: 
-#   georchestra_customizations: /home/jean/dev/pigeo/helmfiles/georchestra/superset_config/GeorchestraCustomizations.py
-
 image:
   repository: georchestra/superset
   tag: 20250127-1041-c87416467
-  pullPolicy: Always
-  # repository: apache/superset
-  # tag: 4.1.1-dev
 
 supersetNode:
   startupProbe: 
@@ -57,7 +51,7 @@ postgresql:
   # Use geOrchestra's PostgreSQL app DB
   # You have to create a dedicated schema, user and give this user access 
   # only to this schema, using search_path
-  enabled: true
+  enabled: false
 
 ######################################
 # geOrchestra custom Superset config
