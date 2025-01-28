@@ -1,7 +1,7 @@
 site_name: geOrchestra dashboards, using Apache Superset
 
-repo_url: https://github.com/georchestra/dashboards
-repo_name: dashboards
+repo_url: https://github.com/georchestra/dashboard
+repo_name: georchestra-dashboard
 
 docs_dir: docs
 edit_uri: edit/main/docs/
@@ -77,7 +77,6 @@ nav:
         - Développer:
             - guides_techniques/developper/index.md
             - guides_techniques/developper/matrice_fonctionnalites.md
-            - guides_techniques/developper/api.md
 
 markdown_extensions:
   - admonition
