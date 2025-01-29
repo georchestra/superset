@@ -100,8 +100,20 @@ EXTRA_SEQUENTIAL_COLOR_SCHEMES =  [
 
 
 ################################
-# Talisman config
+# Web Security config
 ################################
+
+# You will need this for instance to embed mviewer maps in Superset
+HTML_SANITIZATION = True
+# Allow iframes
+HTML_SANITIZATION_SCHEMA_EXTENSIONS = {
+"attributes": {
+    "*": ["style","className"],
+    "iframe": ["src"]
+},
+    "tagNames": ["style","iframe"]
+}
+
 TALISMAN_CONFIG = {
     "content_security_policy": {
         "base-uri": ["'self'"],
@@ -125,7 +137,13 @@ TALISMAN_CONFIG = {
             "'self'",
             "'unsafe-inline'",
         ],
+        # unsafe-eval and cdn are necessary for the geOr header webcomponent to work
         "script-src": ["'self'", "'strict-dynamic'", "'unsafe-eval'", "https://cdn.jsdelivr.net/"],
+        # Those 2 lines are related to iframe embedding (e.g. to embed an mviewer map from another domain)
+        # frame-ancestors = allow to embed this superset's visualizations to be embedded in www.geo2france.fr content
+        # frame-src = allow to embed for instance a mviewer map from www.geo2france.fr in this Superset instance (in a dashboard)
+        "frame-ancestors" : "www.geo2france.fr", 
+        "frame-src" : ["'self'", "www.geo2france.fr"],
     },
     "content_security_policy_nonce_in": ["script-src"],
     "force_https": False,
