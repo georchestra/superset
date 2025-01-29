@@ -16,7 +16,8 @@ secretEnv:
   # rather use an externally created secret since it seems we need to override the default one if 
   # using our own pg DB
   create: false
-  envFromSecret: my-georchestra-custom-superset-secret
+
+envFromSecret: my-georchestra-custom-superset-secret
 
 # Enable example data & dashboards (includes a config section see below)
 # extraConfigs: 

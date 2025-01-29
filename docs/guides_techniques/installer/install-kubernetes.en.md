@@ -36,7 +36,8 @@ extraEnvRaw:
 secretEnv:
   create: false
   # declare the secret mentioned above
-  envFromSecret: my-georchestra-custom-superset-secret
+  
+envFromSecret: my-georchestra-custom-superset-secret
 
 image:
   repository: georchestra/superset
