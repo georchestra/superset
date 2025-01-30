@@ -20,23 +20,8 @@ class GeorchestraRemoteUserView(AuthRemoteUserView):
     login_template = ''
 
     def __init__(self):
-        self. ROLES_PREFIX = appbuilder.app.config.get("GEORCHESTRA_ROLES_PREFIX", "ROLE_SUPERSET_")
-        self.USE_ORG_AS_ROLE = appbuilder.app.config.get("GEORCHESTRA_ORG_AS_ROLE", False)
-        self.AUTH_USER_DEFAULT_ROLE = appbuilder.app.config.get("AUTH_USER_REGISTRATION_ROLE", "Public")
         self.LOGIN_REDIRECT_URL = appbuilder.app.config.get("LOGIN_REDIRECT_URL", "")
         self.LOGOUT_REDIRECT_URL = appbuilder.app.config.get("LOGOUT_REDIRECT_URL", "")
-
-    def get_roles_from_header(self, georchestra_roles: str) -> list[str]:
-        """
-        Split and filter roles based on the list provided in the HTTP headers
-        :param georchestra_roles: comma-separated list of geOrchestra roles. superset relevant roles are expected
-        to have a ROLE_SUPERSET_ prefix
-        :return: a list of superset-relevant roles
-        """
-        roles_list = georchestra_roles.split(";");
-        superset_roles = [role.replace(self.ROLES_PREFIX, "", 1).upper()
-                          for role in roles_list if role.startswith(self.ROLES_PREFIX)]
-        return superset_roles
 
     @expose("/logout/")
     def logout(self):
@@ -65,8 +50,6 @@ class RemoteUserLogin(object):
         self. ROLES_PREFIX = app.config.get("GEORCHESTRA_ROLES_PREFIX", "ROLE_SUPERSET_")
         self.USE_ORG_AS_ROLE = app.config.get("GEORCHESTRA_ORG_AS_ROLE", False)
         self.AUTH_USER_DEFAULT_ROLE = app.config.get("AUTH_USER_REGISTRATION_ROLE", "Public")
-        self.LOGIN_REDIRECT_URL = app.config.get("LOGIN_REDIRECT_URL", "")
-        self.LOGOUT_REDIRECT_URL = app.config.get("LOGOUT_REDIRECT_URL", "")
 
     def get_roles_from_header(self, georchestra_roles: str) -> list[str]:
         """
