@@ -62,7 +62,8 @@ nav:
         - Sommaire: guides_techniques/index.md
         - Administrer:
             - guides_techniques/administrer/index.md
-            - guides_techniques/administrer/une_page.md
+            - guides_techniques/administrer/manage_roles.md
+            - guides_techniques/administrer/import_resources.md
         - Installer:
             - guides_techniques/installer/index.md
             - guides_techniques/installer/presentation.md
