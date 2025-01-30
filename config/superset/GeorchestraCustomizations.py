@@ -47,7 +47,7 @@ class RemoteUserLogin(object):
     def __init__(self, app):
         self.app = app
 
-        self. ROLES_PREFIX = app.config.get("GEORCHESTRA_ROLES_PREFIX", "ROLE_SUPERSET_")
+        self.ROLES_PREFIX = app.config.get("GEORCHESTRA_ROLES_PREFIX", "ROLE_SUPERSET_")
         self.USE_ORG_AS_ROLE = app.config.get("GEORCHESTRA_ORG_AS_ROLE", False)
         self.AUTH_USER_DEFAULT_ROLE = app.config.get("AUTH_USER_REGISTRATION_ROLE", "Public")
 
