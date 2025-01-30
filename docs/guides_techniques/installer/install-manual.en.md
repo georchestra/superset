@@ -25,5 +25,5 @@ gunicorn \
       --access-logfile /var/log/superset/access.log \
       --log-level info \
       --error-logfile /var/log/superset/error.log \
-      "superset.app:create_app(superset_app_root='/dash')"
+      "superset.app:create_app(superset_app_root='/analytic')"
 ```

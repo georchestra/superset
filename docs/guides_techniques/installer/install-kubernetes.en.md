@@ -28,15 +28,15 @@ Deploy your secret, it will be necessary afterward.
 We provide you with an example helm values file in `kubernetes/georchestra-values.yaml`. Here's the leanest version of it:
 ```yaml
 extraEnvRaw: 
-    - name: SUPERSET_APP_ROOT
-      value: "/dash"
-    - name: SUPERSET_LOAD_EXAMPLES
-      value: "no"
+  - name: SUPERSET_APP_ROOT
+    value: "/analytic"
+  - name: SUPERSET_LOAD_EXAMPLES
+    value: "no"
 
 secretEnv:
   create: false
   # declare the secret mentioned above
-  
+
 envFromSecret: my-georchestra-custom-superset-secret
 
 image:
@@ -46,13 +46,13 @@ image:
 supersetNode:
   startupProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
   livenessProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
   readinessProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
 
 postgresql:
   # Use geOrchestra's PostgreSQL app DB.
@@ -61,7 +61,7 @@ postgresql:
 
 !!! tip "Tip"
 
-    In this example, /dash is the path to your Superset instance. If you want to change the path, you will have to change the env var but also the path of the probes. And it will always have to match the config you made in the SP/gateway.
+    In this example, /analytic is the path to your Superset instance. If you want to change the path, you will have to change the env var but also the path of the probes. And it will always have to match the config you made in the SP/gateway.
 
 This values file will be completed by adding the Superset python config files. Those will be set from external files as they are a bit verbose.
 

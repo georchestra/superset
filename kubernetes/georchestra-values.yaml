@@ -6,10 +6,10 @@ nodeSelector:
   georchestra: "true"
 
 extraEnvRaw: 
-    - name: SUPERSET_APP_ROOT
-      value: "/dash"
-    - name: SUPERSET_LOAD_EXAMPLES
-      value: "no"
+  - name: SUPERSET_APP_ROOT
+    value: "/analytic"
+  - name: SUPERSET_LOAD_EXAMPLES
+    value: "no"
 
 
 secretEnv:
@@ -40,13 +40,13 @@ image:
 supersetNode:
   startupProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
   livenessProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
   readinessProbe: 
     httpGet:
-        path: /dash/health
+        path: /analytic/health
 
 postgresql:
   # Use geOrchestra's PostgreSQL app DB

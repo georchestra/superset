@@ -45,7 +45,7 @@ Alternatively, you can copy the content of the config/ folder into the kubernete
 
 ### Changing the path prefix where Superset is accessed
 
-By default, the superset app will be accessed under `/dash` path. This can quite easily be changed:
+By default, the superset app will be accessed under `/analytic` path. This can quite easily be changed:
 - In the georchestra-values.yaml, 
   - Change the value of the `SUPERSET_APP_ROOT` env var.
   - Update accordingly the paths for the healthchecks.
@@ -133,7 +133,7 @@ gunicorn \
       --access-logfile /var/log/superset/access.log \
       --log-level info \
       --error-logfile /var/log/superset/error.log \
-      "superset.app:create_app(superset_app_root='/dash')"
+      "superset.app:create_app(superset_app_root='/analytic')"
 ```
 
 
@@ -160,10 +160,10 @@ spring:
       - id: superset
         uri: ${georchestra.gateway.services.superset.target}
         predicates:
-        - Path=/dash/**
+        - Path=/analytic/**
 georchestra.gateway.services:
   ...
-  superset.target: http://${SUPERSET_HOST}:8088/dash/
+  superset.target: http://${SUPERSET_HOST}:8088/analytic/
 ```
 
 - **gateway.yaml**:
