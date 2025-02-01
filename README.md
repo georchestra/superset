@@ -15,7 +15,7 @@ geOrchestra already provides a database for all its apps (not the data. The appl
 - Create the schema in your geOrchestra DB. Create a dedicated user too, owning this schema. Superset does not manage the selection of the schema, so ou have to set this user's search path to the given schema *only*. Example code:
 ```
 CREATE USER superset WITH ENCRYPTED PASSWORD 'superset';
-CREATE SCHEMA AUTHORIZATION superset;
+CREATE SCHEMA superset AUTHORIZATION superset;
 ALTER ROLE superset SET search_path = superset;
 ```
 - Tell Superset to use it. Depending on the deployment method, you will have to configure the SQLAlchemy connection string in the config file, or to set some environment variables. Please follow the instructions below for your chosen deployment method.
@@ -90,7 +90,7 @@ In https://github.com/georchestra/docker/, docker-compose.superset.yml will depl
 Here are the steps to follow
 - Create a user and schema for superset in the geOrchestra DB, as instructed in _Use the geOrchestra applicative database_ above. This can be automated with the command
   ```bash
-  docker compose exec database psql -U georchestra -c "CREATE USER superset WITH ENCRYPTED PASSWORD 'superset'; CREATE SCHEMA AUTHORIZATION superset; ALTER ROLE superset SET search_path = superset;"
+  docker compose exec database psql -U georchestra -c "CREATE USER superset WITH ENCRYPTED PASSWORD 'superset'; CREATE SCHEMA superset AUTHORIZATION superset; ALTER ROLE superset SET search_path = superset;"
   ```
 - copy into your [georchestra docker folder](https://github.com/georchestra/docker) the following files from this repo:
   - config/ folder (will add a `superset` folder into your config folder)

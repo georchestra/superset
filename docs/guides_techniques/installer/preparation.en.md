@@ -11,7 +11,7 @@ geOrchestra already provides a database for all its apps (not the data. The _app
 - Create the schema in your geOrchestra DB. Create a dedicated user too, owning this schema. Superset does not manage the selection of the schema, so ou have to set this user's search path to the given schema *only*. Example code:
 ```
 CREATE USER superset WITH ENCRYPTED PASSWORD 'superset';
-CREATE SCHEMA AUTHORIZATION superset;
+CREATE SCHEMA superset AUTHORIZATION superset;
 ALTER ROLE superset SET search_path = superset;
 ```
 - Tell Superset to use it. Depending on the deployment method, you will have to configure the SQLAlchemy connection string in the config file, or to set some environment variables. Please follow the instructions below for your chosen deployment method.
@@ -26,7 +26,7 @@ This will require only minor changes in the geOrchestra datadir. Depending on th
 
 It should be sufficient to add the corresponding line in the target-mappings.properties file. And restart the SP. 
 ```
-/analytic=http://superset_host:8088/analytic/
+analytic=http://superset_host:8088/analytic/
 ```
 - adjust the host depending on your setup
 - 8088 is the default port for Superset
