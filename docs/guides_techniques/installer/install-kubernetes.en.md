@@ -29,7 +29,7 @@ We provide you with an example helm values file in `kubernetes/georchestra-value
 ```yaml
 extraEnvRaw: 
   - name: SUPERSET_APP_ROOT
-    value: "/analytic"
+    value: "/superset"
   - name: SUPERSET_LOAD_EXAMPLES
     value: "no"
 
@@ -46,13 +46,13 @@ image:
 supersetNode:
   startupProbe: 
     httpGet:
-        path: /analytic/health
+        path: /superset/health
   livenessProbe: 
     httpGet:
-        path: /analytic/health
+        path: /superset/health
   readinessProbe: 
     httpGet:
-        path: /analytic/health
+        path: /superset/health
 
 postgresql:
   # Use geOrchestra's PostgreSQL app DB.
@@ -61,7 +61,7 @@ postgresql:
 
 !!! tip "Tip"
 
-    In this example, /analytic is the path to your Superset instance. If you want to change the path, you will have to change the env var but also the path of the probes. And it will always have to match the config you made in the SP/gateway.
+    In this example, /superset is the path to your Superset instance. If you want to change the path, you will have to change the env var but also the path of the probes. And it will always have to match the config you made in the SP/gateway.
 
 This values file will be completed by adding the Superset python config files. Those will be set from external files as they are a bit verbose.
 

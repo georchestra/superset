@@ -26,11 +26,11 @@ This will require only minor changes in the geOrchestra datadir. Depending on th
 
 It should be sufficient to add the corresponding line in the target-mappings.properties file. And restart the SP. 
 ```
-analytic=http://superset_host:8088/analytic/
+analytic=http://superset_host:8088/superset/
 ```
 - adjust the host depending on your setup
 - 8088 is the default port for Superset
-- `/analytic` is the path prefix defined under which you want to access your superset instance. You can change it but take care that both occurences in the line have to match, to simplify proxying. You will also have to use the same values when configuring your Superset deployment (see Install-* sections)
+- `/superset` is the path prefix defined under which you want to access your superset instance. You can change it but take care that both occurences in the line have to match, to simplify proxying. You will also have to use the same values when configuring your Superset deployment (see Install-* sections)
 
 ### Gateway
 
@@ -47,10 +47,10 @@ spring:
       - id: superset
         uri: ${georchestra.gateway.services.superset.target}
         predicates:
-        - Path=/analytic/**
+        - Path=/superset/**
 georchestra.gateway.services:
   ...
-  superset.target: http://superset_host:8088/analytic/
+  superset.target: http://superset_host:8088/superset/
 ```
 
 - **gateway.yaml**:

@@ -3,7 +3,7 @@
 ## About
 The geOrchestra community has chosen Apache Superset to feature a dashboarding capacity.
 
-It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding the capacity to serve Superset under a path prefix (e.g. https://demo.georchestra.org/dashboards/). This functionality is ported by a PR that is, at the time of writing this doc, not yet merged upstream: https://github.com/apache/superset/pull/30134
+It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding the capacity to serve Superset under a path prefix (e.g. https://demo.georchestra.org/superset/). This functionality is ported by a PR that is, at the time of writing this doc, not yet merged upstream: https://github.com/apache/superset/pull/30134
 
 
 ## Use the geOrchestra applicative database for Superset config (so-called "Metadata DB")
@@ -45,7 +45,7 @@ Alternatively, you can copy the content of the config/ folder into the kubernete
 
 ### Changing the path prefix where Superset is accessed
 
-By default, the superset app will be accessed under `/analytic` path. This can quite easily be changed:
+By default, the superset app will be accessed under `/superset` path. This can quite easily be changed:
 - In the georchestra-values.yaml, 
   - Change the value of the `SUPERSET_APP_ROOT` env var.
   - Update accordingly the paths for the healthchecks.
@@ -133,7 +133,7 @@ gunicorn \
       --access-logfile /var/log/superset/access.log \
       --log-level info \
       --error-logfile /var/log/superset/error.log \
-      "superset.app:create_app(superset_app_root='/analytic')"
+      "superset.app:create_app(superset_app_root='/superset')"
 ```
 
 
@@ -160,10 +160,10 @@ spring:
       - id: superset
         uri: ${georchestra.gateway.services.superset.target}
         predicates:
-        - Path=/analytic/**
+        - Path=/superset/**
 georchestra.gateway.services:
   ...
-  superset.target: http://${SUPERSET_HOST}:8088/analytic/
+  superset.target: http://${SUPERSET_HOST}:8088/superset/
 ```
 
 - **gateway.yaml**:

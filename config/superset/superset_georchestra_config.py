@@ -33,7 +33,7 @@ from LocalizationFr import *
 # Redefine home page (Superset default is /superset/welcome)
 # You can either define a path (including the potential prefix)
 # or a view name
-# HOME_PAGE_PATH="/analytic/dashboard/list"
+# HOME_PAGE_PATH="/superset/dashboard/list"
 HOME_PAGE_VIEW="DashboardModelView.list"
 
 DOCUMENTATION_URL = "https://docs.georchestra.org/en/superset/"
