@@ -13,6 +13,8 @@ ROW_LIMIT = 5000
 SUPERSET_WEBSERVER_PORT = 8088
 APPKEY = 'superset'
 
+# disable telemetry
+SCARF_ANALYTICS = False
 # geOrchestra-specific login logic
 from flask_appbuilder.const import AUTH_REMOTE_USER
 from GeorchestraCustomizations import GeorchestraSecurityManager, app_init
