@@ -1,7 +1,7 @@
 site_name: geOrchestra dashboards, using Apache Superset
 
-repo_url: https://github.com/georchestra/dashboard
-repo_name: georchestra-dashboard
+repo_url: https://github.com/georchestra/superset
+repo_name: georchestra-superset
 
 docs_dir: docs
 edit_uri: edit/main/docs/
