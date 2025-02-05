@@ -3,7 +3,7 @@
 ## About
 The geOrchestra community has chosen Apache Superset to feature a dashboarding capacity.
 
-It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding the capacity to serve Superset under a path prefix (e.g. https://demo.georchestra.org/dashboards/). This functionality is ported by a PR that is, at the time of writing this doc, not yet merged upstream: https://github.com/apache/superset/pull/30134
+It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding the capacity to serve Superset under a path prefix (e.g. https://demo.georchestra.org/superset/). This functionality is ported by a PR that is, at the time of writing this doc, not yet merged upstream: https://github.com/apache/superset/pull/30134
 
 
 ## Use the geOrchestra applicative database for Superset config (so-called "Metadata DB")
@@ -15,7 +15,7 @@ geOrchestra already provides a database for all its apps (not the data. The appl
 - Create the schema in your geOrchestra DB. Create a dedicated user too, owning this schema. Superset does not manage the selection of the schema, so ou have to set this user's search path to the given schema *only*. Example code:
 ```
 CREATE USER superset WITH ENCRYPTED PASSWORD 'superset';
-CREATE SCHEMA AUTHORIZATION superset;
+CREATE SCHEMA superset AUTHORIZATION superset;
 ALTER ROLE superset SET search_path = superset;
 ```
 - Tell Superset to use it. Depending on the deployment method, you will have to configure the SQLAlchemy connection string in the config file, or to set some environment variables. Please follow the instructions below for your chosen deployment method.
@@ -45,7 +45,7 @@ Alternatively, you can copy the content of the config/ folder into the kubernete
 
 ### Changing the path prefix where Superset is accessed
 
-By default, the superset app will be accessed under `/analytic` path. This can quite easily be changed:
+By default, the superset app will be accessed under `/superset` path. This can quite easily be changed:
 - In the georchestra-values.yaml, 
   - Change the value of the `SUPERSET_APP_ROOT` env var.
   - Update accordingly the paths for the healthchecks.
@@ -90,7 +90,7 @@ In https://github.com/georchestra/docker/, docker-compose.superset.yml will depl
 Here are the steps to follow
 - Create a user and schema for superset in the geOrchestra DB, as instructed in _Use the geOrchestra applicative database_ above. This can be automated with the command
   ```bash
-  docker compose exec database psql -U georchestra -c "CREATE USER superset WITH ENCRYPTED PASSWORD 'superset'; CREATE SCHEMA AUTHORIZATION superset; ALTER ROLE superset SET search_path = superset;"
+  docker compose exec database psql -U georchestra -c "CREATE USER superset WITH ENCRYPTED PASSWORD 'superset'; CREATE SCHEMA superset AUTHORIZATION superset; ALTER ROLE superset SET search_path = superset;"
   ```
 - copy into your [georchestra docker folder](https://github.com/georchestra/docker) the following files from this repo:
   - config/ folder (will add a `superset` folder into your config folder)
@@ -133,7 +133,7 @@ gunicorn \
       --access-logfile /var/log/superset/access.log \
       --log-level info \
       --error-logfile /var/log/superset/error.log \
-      "superset.app:create_app(superset_app_root='/analytic')"
+      "superset.app:create_app(superset_app_root='/superset')"
 ```
 
 
@@ -160,10 +160,10 @@ spring:
       - id: superset
         uri: ${georchestra.gateway.services.superset.target}
         predicates:
-        - Path=/analytic/**
+        - Path=/superset/**
 georchestra.gateway.services:
   ...
-  superset.target: http://${SUPERSET_HOST}:8088/analytic/
+  superset.target: http://${SUPERSET_HOST}:8088/superset/
 ```
 
 - **gateway.yaml**:

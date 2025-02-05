@@ -1,14 +1,14 @@
 site_name: geOrchestra dashboards, using Apache Superset
 
-repo_url: https://github.com/georchestra/dashboard
-repo_name: georchestra-dashboard
+repo_url: https://github.com/georchestra/superset
+repo_name: georchestra-superset
 
 docs_dir: docs
 edit_uri: edit/main/docs/
 
 
 theme:
-  language: fr  
+  language: en
   features:
     # - toc.integrate
     - navigation.indexes
@@ -38,7 +38,7 @@ extra:
       link: https://kiwiirc.com/client/irc.libera.chat/georchestra
 
 
-copyright: '© 2023 - geOrchestra'
+copyright: '© 2025 - geOrchestra'
 
 extra_css:
     - css/extra.css
@@ -46,38 +46,38 @@ extra_css:
 extra_javascript:
     - assets/custom_versions.js
 
-# arborescence de 1er et 2e niveau à gérer ici
-# Ces entrées correspondent au modèle de documentation
-# Here do not put .fr or .en in the name of the markdown : the i18n plugin manage this for you
+# 1st and 2nd level tree structure to manage here
+# These entries match the documentation template
+# Here do not put .fr or .en in the name of the markdown: the i18n plugin manage this for you
 
 nav:
-    - Accueil: index.md 
-    - Guide utilisateur:
-        - Sommaire: guide_utilisateur/index.md
-        - Prendre en main: guide_utilisateur/prise_en_main.md
-        - Vue globale: guide_utilisateur/vue_globale.md
-        - Barres ou menus d''outils: guide_utilisateur/outils.md
-        - Aide syntaxe: guide_utilisateur/aide_syntaxe.md
-    - Guides techniques:
-        - Sommaire: guides_techniques/index.md
-        - Administrer:
-            - guides_techniques/administrer/index.md
-            - guides_techniques/administrer/manage_roles.md
-            - guides_techniques/administrer/import_resources.md
-        - Installer:
-            - guides_techniques/installer/index.md
-            - guides_techniques/installer/presentation.md
-            - guides_techniques/installer/prerequis.md
-            - guides_techniques/installer/preparation.md
-            - guides_techniques/installer/install-kubernetes.md
-            - guides_techniques/installer/install-docker.md
-            - guides_techniques/installer/install-manual.md
-            - guides_techniques/installer/configuration.md
-            - guides_techniques/installer/debug.md
-            - guides_techniques/installer/tests.md
-        - Développer:
-            - guides_techniques/developper/index.md
-            - guides_techniques/developper/matrice_fonctionnalites.md
+    - Home: index.md 
+    - User guide:
+        - Index: user_guide/index.md
+        - Getting started: user_guide/getting_started.md
+        - Global overview: user_guide/global_overview.md
+        - Menus and toolbars: user_guide/tools.md
+        - Syntax help: user_guide/syntax_help.md
+    - Technical guides:
+        - Index: technical_guides/index.md
+        - Administration:
+            - technical_guides/administration/index.md
+            - technical_guides/administration/manage_roles.md
+            - technical_guides/administration/import_resources.md
+        - Installation:
+            - technical_guides/installation/index.md
+            - technical_guides/installation/presentation.md
+            - technical_guides/installation/prerequisites.md
+            - technical_guides/installation/preparation.md
+            - technical_guides/installation/install-kubernetes.md
+            - technical_guides/installation/install-docker.md
+            - technical_guides/installation/install-manual.md
+            - technical_guides/installation/configuration.md
+            - technical_guides/installation/debug.md
+            - technical_guides/installation/tests.md
+        - Contribute:
+            - technical_guides/contribute/index.md
+            - technical_guides/contribute/feature_matrix.md
 
 markdown_extensions:
   - admonition
@@ -104,27 +104,11 @@ plugins:
         reconfigure_material: true
         reconfigure_search: true
         languages:
-          - locale: fr
-            default: true
-            name: Français
-            build: true
-            site_name: "Tableaux de bords et graphiques pour geOrchestra"
           - locale: en
+            default: true
             name: English
             build: true
-            site_name: "geOrchestra dashboards and dataviz"
-            nav_translations:
-              Accueil: "Home"
-              Guide utilisateur: "User guide"
-              Sommaire: "Summary"
-              Prendre en main: "Getting started"
-              Guides techniques: "Technical guides"
-              Vue globale: "Global overview"
-              Barres ou menus d''outils: "Tool menu"
-              Aide syntaxe: "Help syntaxe"
-              Administrer: "Administrate"
-              Installer: "Install"
-              Développer: "Contribute"
+            site_name: "geOrchestra dashboards and dataviz with Superset"
 
 
   - git-revision-date-localized:

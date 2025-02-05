@@ -13,6 +13,8 @@ ROW_LIMIT = 5000
 SUPERSET_WEBSERVER_PORT = 8088
 APPKEY = 'superset'
 
+# disable telemetry
+SCARF_ANALYTICS = False
 # geOrchestra-specific login logic
 from flask_appbuilder.const import AUTH_REMOTE_USER
 from GeorchestraCustomizations import GeorchestraSecurityManager, app_init
@@ -31,7 +33,7 @@ from LocalizationFr import *
 # Redefine home page (Superset default is /superset/welcome)
 # You can either define a path (including the potential prefix)
 # or a view name
-# HOME_PAGE_PATH="/analytic/dashboard/list"
+# HOME_PAGE_PATH="/superset/dashboard/list"
 HOME_PAGE_VIEW="DashboardModelView.list"
 
 DOCUMENTATION_URL = "https://docs.georchestra.org/en/superset/"
