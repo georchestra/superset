@@ -1,5 +1,8 @@
 # Superset specific config
 
+import logging
+logger=logging.getLogger()
+
 # Optionally import Preconfig.py (which will have been included on
 # the PYTHONPATH) in order to allow to set some variables that will be 
 # necessary here , e.g. REDIS_BASE_URL that is not set, when running 
