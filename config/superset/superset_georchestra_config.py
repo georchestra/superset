@@ -9,6 +9,9 @@
 ################################
 # geOrchestra customizations
 ################################
+# Make sure PROXY fix is enabled (done by default in dockerized environments but not on manual install)
+ENABLE_PROXY_FIX = True
+
 ROW_LIMIT = 5000
 SUPERSET_WEBSERVER_PORT = 8088
 APPKEY = 'superset'
