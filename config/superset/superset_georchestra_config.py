@@ -1,5 +1,22 @@
 # Superset specific config
 
+# Optionally import Preconfig.py (which will have been included on
+# the PYTHONPATH) in order to allow to set some variables that will be 
+# necessary here , e.g. REDIS_BASE_URL that is not set, when running 
+# non-dockerized deployment
+#
+try:
+    import Preconfig
+    from Preconfig import *  
+
+    logger.info(
+        f"Loaded your preconfig parameters from " f"[{Preconfig.__file__}]"
+    )
+except ImportError:
+    # No preconfig
+    pass
+
+
 ## Security
 # You can generate a strong key using `openssl rand -base64 42`
 # SECRET_KEY = 'LwAsS+GcbFUbP52NXNwOsG7u3ZJ+LtjGyXlAhhFX7QgwQDD7Zj/IliEe'
@@ -191,3 +208,17 @@ FILTER_STATE_CACHE_CONFIG = {
 RATELIMIT_STORAGE_URI = f"{REDIS_BASE_URL}/4"
 RATELIMIT_STORAGE_OPTIONS = {"socket_connect_timeout": 30}
 
+
+# Optionally import Overrides.py (which will have been included on
+# the PYTHONPATH) in order to allow some final, custom overrides
+#
+try:
+    import Overrides
+    from Overrides import *  
+
+    logger.info(
+        f"Loaded your preconfig parameters from " f"[{Overrides.__file__}]"
+    )
+except ImportError:
+    # No overrides
+    pass
