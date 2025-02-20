@@ -197,32 +197,28 @@ class GeorchestraContextProcessor(object):
                 parser.read_file(lines)
                 self.sections['default'] = parser['section']
         properties = {
-                'headerScript': self.get('headerScript'),
-                'headerHeight': self.get('headerHeight'),
-                'headerUrl': self.get('headerUrl'),
-                'headerConfigFile': self.get('headerConfigFile'),
-                'useLegacyHeader': self.get('useLegacyHeader'),
-                'georchestraStyleSheet': self.get('georchestraStyleSheet'),
-                'logoUrl': self.get('logoUrl'),
-                'noheader': self.noheader,
+            'headerScript': self.get("GEORCHESTRA_HEADER_SCRIPT", 'headerScript'),
+            'headerHeight': self.get("GEORCHESTRA_HEADER_HEIGHT", 'headerHeight'),
+            'headerUrl': self.get("GEORCHESTRA_HEADER_URL", 'headerUrl'),
+            'headerConfigFile': self.get("GEORCHESTRA_HEADER_CONFIG_FILE", 'headerConfigFile'),
+            'useLegacyHeader': self.get("GEORCHESTRA_HEADER_LEGACY_HEADER", 'useLegacyHeader'),
+            'georchestraStyleSheet': self.get("GEORCHESTRA_HEADER_STYLESHEET", 'georchestraStyleSheet'),
+            'logoUrl': self.get("GEORCHESTRA_LOGO_URL", 'logoUrl'),
+            'noheader': self.noheader,
         }
-        superset_config = {
-                'headerScript': self.app.config.get("GEORCHESTRA_HEADER_SCRIPT", ""),
-                'headerHeight': self.app.config.get("GEORCHESTRA_HEADER_HEIGHT", ""),
-                'headerUrl': self.app.config.get("GEORCHESTRA_HEADER_URL", ""),
-                'headerConfigFile': self.app.config.get("GEORCHESTRA_HEADER_CONFIG_FILE", ""),
-                'useLegacyHeader': self.app.config.get("GEORCHESTRA_HEADER_USE_LEGACY_HEADER", ""),
-                'georchestraStyleSheet': self.app.config.get("GEORCHESTRA_HEADER_STYLESHEET", ""),
-                'logoUrl': self.app.config.get("GEORCHESTRA_LOGO_URL", ""),
-                'noheader': self.noheader,
-        }
-        # Override file-loaded properties with superset_config params
-        properties.update(superset_config)
-        return { "georchestra": properties }
+        return {"georchestra": properties}
 
-    def get(self, key, section='default'):
-        if section in self.sections:
-            return self.sections[section].get(key, None)
+    def get(self, param_key, prop_key, section='default'):
+        """
+        :param param_key: key allowed in superset config files
+        :param prop_key: key allowed in geOrchestra config files
+        :param section: 
+        :return: 
+        """
+        if self.app.config.get(param_key):
+            return self.app.config.get(param_key)
+        elif section in self.sections:
+            return self.sections[section].get(prop_key, None)
         else:
             return None
 
