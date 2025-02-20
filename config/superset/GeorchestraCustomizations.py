@@ -211,7 +211,7 @@ class GeorchestraContextProcessor(object):
                 'headerHeight': self.app.config.get("GEORCHESTRA_HEADER_HEIGHT", ""),
                 'headerUrl': self.app.config.get("GEORCHESTRA_HEADER_URL", ""),
                 'headerConfigFile': self.app.config.get("GEORCHESTRA_HEADER_CONFIG_FILE", ""),
-                'useLegacyHeader': self.app.config.get("GEORCHESTRA_HEADER_LEGACY_HEADER", ""),
+                'useLegacyHeader': self.app.config.get("GEORCHESTRA_HEADER_USE_LEGACY_HEADER", ""),
                 'georchestraStyleSheet': self.app.config.get("GEORCHESTRA_HEADER_STYLESHEET", ""),
                 'logoUrl': self.app.config.get("GEORCHESTRA_LOGO_URL", ""),
                 'noheader': self.noheader,
