@@ -1,0 +1,105 @@
+{
+  "config": {
+    "hideLogin": false,
+    "adminRoles": [
+      "ROLE_SUPERUSER",
+      "ROLE_ORGADMIN",
+      "ROLE_GN_ADMIN",
+      "ROLE_GN_REVIEWER",
+      "ROLE_GN_EDITOR",
+      "ROLE_MAPSTORE_ADMIN"
+    ]
+  },
+  "menu": [
+    {
+      "label": "Catalogue",
+      "i18n": "catalogue",
+      "url": "/datahub/",
+      "activeAppUrl": "/datahub"
+    },
+    {
+      "type": "dropdown",
+      "label": "Viewers",
+      "items": [
+        {
+          "label": "Mapstore viewer",
+          "i18n": "viewer",
+          "url": "/mapstore/#",
+          "activeAppUrl": "/mapstore"
+        },
+        {
+          "label": "Mviewer",
+          "i18n": "mviewer",
+          "url": "/mviewer/",
+          "activeAppUrl": "/mviewer"
+        }
+      ]
+    },
+    {
+      "label": "Maps",
+      "i18n": "maps",
+      "url": "/mapstore/#/home",
+      "activeAppUrl": "/mapstore/#/home"
+    },
+    {
+      "label": "Services",
+      "i18n": "services",
+      "url": "/geoserver/web",
+      "activeAppUrl": "/geoserver"
+    },
+    {
+      "label": "Datafeeder",
+      "i18n": "datafeeder",
+      "url": "/import",
+      "activeAppUrl": "/import",
+      "hasRole": "ROLE_SUPERUSER,ROLE_IMPORT"
+    },
+    {
+      "label": "Superset",
+      "i18n": "superset",
+      "url": "/superset",
+      "activeAppUrl": "/superset",
+      "hasRole": "ROLE_USER"
+    },
+    {
+      "hasRole": "ROLE_SUPERUSER,ROLE_GN_EDITOR,ROLE_GN_ADMIN,ROLE_MAPSTORE_ADMIN",
+      "type": "separator"
+    },
+    {
+      "type": "dropdown",
+      "label": "Administration",
+      "i18n": "admin",
+      "hasRole": "ROLE_SUPERUSER,ROLE_GN_EDITOR,ROLE_GN_ADMIN,ROLE_MAPSTORE_ADMIN",
+      "items": [
+        {
+          "label": "Meta Editor",
+          "i18n": "meta-editor",
+          "url": "/metadata-editor ",
+          "activeAppUrl": "/metadata-editor",
+          "hasRole": "ROLE_SUPERUSER,ROLE_GN_REVIEWER,ROLE_GN_ADMIN,ROLE_GN_EDITOR"
+        },
+        {
+          "label": "Geonetwork",
+          "i18n": "catalogue",
+          "url": "/geonetwork/srv/:lang3/admin.console",
+          "activeAppUrl": "/geonetwork",
+          "hasRole": "ROLE_SUPERUSER,ROLE_GN_REVIEWER,ROLE_GN_ADMIN"
+        },
+        {
+          "label": "Viewer",
+          "i18n": "viewer",
+          "url": "/mapstore/#/admin",
+          "activeAppUrl": "/mapstore/#/admin",
+          "hasRole": "ROLE_SUPERUSER,ROLE_MAPSTORE_ADMIN"
+        },
+        {
+          "label": "Console",
+          "i18n": "users",
+          "url": "/console/manager/home",
+          "activeAppUrl": "/console/manager",
+          "hasRole": "ROLE_SUPERUSER"
+        }
+      ]
+    }
+  ]
+}
