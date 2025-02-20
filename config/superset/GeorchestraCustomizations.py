@@ -6,6 +6,8 @@ from flask_appbuilder.security.decorators import has_access, no_cache
 from flask_appbuilder._compat import as_unicode
 from flask_login import login_user, logout_user
 
+from configparser import ConfigParser
+from itertools import chain
 import logging
 
 logger = logging.getLogger(__name__)
@@ -153,6 +155,78 @@ class RemoteUserLogin(object):
             logger.debug("Logged in as anonymous user")
 
 
+class GeorchestraContextProcessor(object):
+    """
+    Provide a context_processor that will inject configuration data into the jinja2 templates.
+    It will support
+    - parsing default.properties geOrchestra configuration file
+    - parsing config values from the superset config files
+    """
+    def __init__(self, app):
+        self.sections = None
+        self.app = app
+        self.properties_file_path = app.config.get("GEORCHESTRA_PROPERTIES_FILE_PATH", "")
+        self.noheader = app.config.get("GEORCHESTRA_NOHEADER", False)
+
+    def init_app(self) -> None:
+        """
+        Load the geOrchestra configuration (datadir/default.properties)
+        into the Flask app context
+        :return:
+        """
+        if self.app:
+            self.app.context_processor(self.get_georchestra_properties)
+
+    def get_georchestra_properties(self):
+        """
+        Try to parse geOrchestra default.properties file if provided,
+        then override any value by uppercase params from the Superset config files
+        :return:
+        """
+        if self.noheader:
+            return {"georchestra":
+                        {'noheader': True, }
+                    }
+
+        self.sections = dict()
+        if self.properties_file_path:
+            parser = ConfigParser()
+            with open(self.properties_file_path) as lines:
+                # ConfigParser complains about missing sections in the file. This line does the trick:
+                lines = chain(("[section]",), lines)
+                parser.read_file(lines)
+                self.sections['default'] = parser['section']
+        properties = {
+                'headerScript': self.get('headerScript'),
+                'headerHeight': self.get('headerHeight'),
+                'headerUrl': self.get('headerUrl'),
+                'headerConfigFile': self.get('headerConfigFile'),
+                'useLegacyHeader': self.get('useLegacyHeader'),
+                'georchestraStyleSheet': self.get('georchestraStyleSheet'),
+                'logoUrl': self.get('logoUrl'),
+                'noheader': self.noheader,
+        }
+        superset_config = {
+                'headerScript': self.app.config.get("GEORCHESTRA_HEADER_SCRIPT", ""),
+                'headerHeight': self.app.config.get("GEORCHESTRA_HEADER_HEIGHT", ""),
+                'headerUrl': self.app.config.get("GEORCHESTRA_HEADER_URL", ""),
+                'headerConfigFile': self.app.config.get("GEORCHESTRA_HEADER_CONFIG_FILE", ""),
+                'useLegacyHeader': self.app.config.get("GEORCHESTRA_HEADER_USE_LEGACY_HEADER", ""),
+                'georchestraStyleSheet': self.app.config.get("GEORCHESTRA_HEADER_STYLESHEET", ""),
+                'logoUrl': self.app.config.get("GEORCHESTRA_LOGO_URL", ""),
+                'noheader': self.noheader,
+        }
+        # Override file-loaded properties with superset_config params
+        properties.update(superset_config)
+        return { "georchestra": properties }
+
+    def get(self, key, section='default'):
+        if section in self.sections:
+            return self.sections[section].get(key, None)
+        else:
+            return None
+
+
 # Redefine home page (Superset default is /superset/welcome)
 # You can either define a path (including the potential prefix)
 # or a view name
@@ -171,10 +245,18 @@ class SupersetIndexView(IndexView):
 
 from superset.app import SupersetAppInitializer
 def app_init(app):
+    # Activate the geOrchestra REMOTE_USER logic
     logger.info("REMOTE_USER Registering RemoteUserLogin")
     app.before_request(RemoteUserLogin(app).before_request)
 
+    # Set the home page
     app.config['FAB_INDEX_VIEW'] = f"{SupersetIndexView.__module__}.{SupersetIndexView.__name__}"
+
+    # Read default.properties file from geOrchestra datadir
+    # Used to configure the geOrchestra header (unless superset's config has GEORCHESTRA_NOHEADER=True in that case,
+    # no header will be shown)
+    GeorchestraContextProcessor(app).init_app()
+    
     return SupersetAppInitializer(app)
 
 logger.info(f"Using custom REMOTE_USER logic")

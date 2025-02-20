@@ -46,6 +46,17 @@ CUSTOM_SECURITY_MANAGER = GeorchestraSecurityManager
 APP_INITIALIZER = app_init
 # GEORCHESTRA_ORG_AS_ROLE=False
 GEORCHESTRA_ROLES_PREFIX = "ROLE_SUPERSET_"
+# Can configure the header from the georchestra default.properties file
+GEORCHESTRA_PROPERTIES_FILE_PATH="/etc/georchestra/default.properties"
+#GEORCHESTRA_NOHEADER=True
+# Can also configure the header directly here with the following params
+# GEORCHESTRA_HEADER_SCRIPT=https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js
+# GEORCHESTRA_HEADER_HEIGHT=90
+# GEORCHESTRA_HEADER_URL=/header/
+# GEORCHESTRA_HEADER_CONFIG_FILE=/header-config.json
+# GEORCHESTRA_HEADER_USE_LEGACY_HEADER=true
+# GEORCHESTRA_HEADER_STYLESHEET=http://my-domain-name/stylesheet.css
+# GEORCHESTRA_LOGO_URL=https://www.georchestra.org/public/georchestra-logo.svg
 PUBLIC_ROLE_LIKE = "Gamma"
 AUTH_USER_REGISTRATION_ROLE = "Public"
 LOGOUT_REDIRECT_URL="/logout"
