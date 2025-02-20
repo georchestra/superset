@@ -155,7 +155,13 @@ class RemoteUserLogin(object):
             logger.debug("Logged in as anonymous user")
 
 
-class GeorchestraDatadirLoader(object):
+class GeorchestraContextProcessor(object):
+    """
+    Provide a context_processor that will inject configuration data into the jinja2 templates.
+    It will support
+    - parsing default.properties geOrchestra configuration file
+    - parsing config values from the superset config files
+    """
     def __init__(self, app):
         self.sections = None
         self.app = app
@@ -169,10 +175,19 @@ class GeorchestraDatadirLoader(object):
         :return:
         """
         if self.app:
-            self.app.context_processor(self.get_georchestra_default_properties)
+            self.app.context_processor(self.get_georchestra_properties)
 
+    def get_georchestra_properties(self):
+        """
+        Try to parse geOrchestra default.properties file if provided,
+        then override any value by uppercase params from the Superset config files
+        :return:
+        """
+        if self.noheader:
+            return {"georchestra":
+                        {'noheader': True, }
+                    }
 
-    def get_georchestra_default_properties(self):
         self.sections = dict()
         if self.properties_file_path:
             parser = ConfigParser()
@@ -181,18 +196,29 @@ class GeorchestraDatadirLoader(object):
                 lines = chain(("[section]",), lines)
                 parser.read_file(lines)
                 self.sections['default'] = parser['section']
-        return { "georchestra":
-                    {
-                        'headerScript': self.get('headerScript'),
-                        'headerHeight': self.get('headerHeight'),
-                        'headerUrl': self.get('headerUrl'),
-                        'headerConfigFile': self.get('headerConfigFile'),
-                        'useLegacyHeader': self.get('useLegacyHeader'),
-                        'georchestraStyleSheet': self.get('georchestraStyleSheet'),
-                        'logoUrl': self.get('logoUrl'),
-                        'noheader': self.noheader,
-                    }
-                }
+        properties = {
+                'headerScript': self.get('headerScript'),
+                'headerHeight': self.get('headerHeight'),
+                'headerUrl': self.get('headerUrl'),
+                'headerConfigFile': self.get('headerConfigFile'),
+                'useLegacyHeader': self.get('useLegacyHeader'),
+                'georchestraStyleSheet': self.get('georchestraStyleSheet'),
+                'logoUrl': self.get('logoUrl'),
+                'noheader': self.noheader,
+        }
+        superset_config = {
+                'headerScript': self.app.config.get("GEORCHESTRA_HEADER_SCRIPT", ""),
+                'headerHeight': self.app.config.get("GEORCHESTRA_HEADER_HEIGHT", ""),
+                'headerUrl': self.app.config.get("GEORCHESTRA_HEADER_URL", ""),
+                'headerConfigFile': self.app.config.get("GEORCHESTRA_HEADER_CONFIG_FILE", ""),
+                'useLegacyHeader': self.app.config.get("GEORCHESTRA_HEADER_LEGACY_HEADER", ""),
+                'georchestraStyleSheet': self.app.config.get("GEORCHESTRA_HEADER_STYLESHEET", ""),
+                'logoUrl': self.app.config.get("GEORCHESTRA_LOGO_URL", ""),
+                'noheader': self.noheader,
+        }
+        # Override file-loaded properties with superset_config params
+        properties.update(superset_config)
+        return { "georchestra": properties }
 
     def get(self, key, section='default'):
         if section in self.sections:
@@ -229,7 +255,7 @@ def app_init(app):
     # Read default.properties file from geOrchestra datadir
     # Used to configure the geOrchestra header (unless superset's config has GEORCHESTRA_NOHEADER=True in that case,
     # no header will be shown)
-    GeorchestraDatadirLoader(app).init_app()
+    GeorchestraContextProcessor(app).init_app()
     
     return SupersetAppInitializer(app)
 
