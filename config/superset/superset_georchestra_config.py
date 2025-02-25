@@ -47,7 +47,7 @@ APP_INITIALIZER = app_init
 # GEORCHESTRA_ORG_AS_ROLE=False
 GEORCHESTRA_ROLES_PREFIX = "ROLE_SUPERSET_"
 # Can configure the header from the georchestra default.properties file
-GEORCHESTRA_PROPERTIES_FILE_PATH="/etc/georchestra/default.properties"
+# GEORCHESTRA_PROPERTIES_FILE_PATH="/etc/georchestra/default.properties"
 #GEORCHESTRA_NOHEADER=True
 # Can also configure the header directly here with the following params
 # GEORCHESTRA_HEADER_SCRIPT="https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js"
@@ -158,6 +158,7 @@ TALISMAN_CONFIG = {
             "'self'",
             "blob:",
             "data:",
+            "https://www.georchestra.org",
             "https://apachesuperset.gateway.scarf.sh",
             "https://static.scarf.sh/",
             # "https://avatars.slack-edge.com", # Uncomment when SLACK_ENABLE_AVATARS is True  # noqa: E501
