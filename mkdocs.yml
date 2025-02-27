@@ -63,6 +63,7 @@ nav:
         - Administration:
             - technical_guides/administration/index.md
             - technical_guides/administration/manage_roles.md
+            - technical_guides/administration/making_a_dashboard_public.en.md
             - technical_guides/administration/import_resources.md
         - Installation:
             - technical_guides/installation/index.md
@@ -98,6 +99,9 @@ plugins:
       # ignore_page_pattern: index.md
       # remove_navigation_page_pattern: index.md
       # template_dir_path: custom_template
+  - exclude:
+      glob:
+        - tableofcontent.md
   - i18n:
         docs_structure: suffix
         fallback_to_default: true
