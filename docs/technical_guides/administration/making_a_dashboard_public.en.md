@@ -46,10 +46,13 @@ Then you can run the next startup stages, including `superset init`
 
 Then refresh your composition (`docker compose up`).
 
+_**Beware that running it this way, the `Guest_template` role will be reset each time the `superset init` script is run (each redeploy).**_
+
 #### On kubernetes
 - In [superset_georchestra_config.py](https://github.com/georchestra/superset/blob/main/config/superset/superset_georchestra_config.py#L60), uncomment the `PUBLIC_ROLE_LIKE = "Guest_template"` line.
 - In the helm chart, set the extraConfigs."georchestra_custom_roles\.json" file. The [init script](https://github.com/georchestra/superset/blob/main/kubernetes/georchestra-values.yaml#L80) will load the roles defined in there at startup, including the `Guest_template` one.
 
+_**Beware that running it this way, the `Guest_template` role will be reset each time the `superset init` script is run (each redeploy).**_
 
 ## Add read permissions to the dataset
 
