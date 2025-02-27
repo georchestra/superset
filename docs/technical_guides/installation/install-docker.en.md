@@ -9,8 +9,8 @@ The Superset project ships with docker-compose files. We are providing one, in d
     Similarly, **running Superset with geOrchestra using docker is more considered as for testing purpose**.
 
 
-*You are expected to already have a working geOrchestra instance, started from the [geOrchestra docker composition](https://github.com/georchestra/docker).*
-*It is also expected you followed the [preparation steps](preparation.md).
+*You are expected to already have a working geOrchestra instance, started from the [geOrchestra docker composition](https://github.com/georchestra/docker)*.  
+It is also expected you followed the [preparation steps](preparation.md).
 
 We are going to add the superset compo into this folder, which will make things easier to deploy superset on the same network as the geOrchestra composition.
 
