@@ -1,0 +1,103 @@
+[
+  {
+    "name": "Guest_template",
+    "permissions": [
+      {
+        "permission": {
+          "name": "can_read"
+        },
+        "view_menu": {
+          "name": "CssTemplate"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_read"
+        },
+        "view_menu": {
+          "name": "Chart"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_read"
+        },
+        "view_menu": {
+          "name": "Dashboard"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_read"
+        },
+        "view_menu": {
+          "name": "DashboardPermalinkRestApi"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_read"
+        },
+        "view_menu": {
+          "name": "ExplorePermalinkRestApi"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_time_range"
+        },
+        "view_menu": {
+          "name": "Api"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_explore_json"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_dashboard_permalink"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_slice"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_dashboard"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
+          "name": "can_warm_up_cache"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
+          "name": "menu_access"
+        },
+        "view_menu": {
+          "name": "Dashboards"
+        }
+      }
+    ]
+  }
+]

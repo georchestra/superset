@@ -19,19 +19,11 @@ secretEnv:
 
 envFromSecret: my-georchestra-custom-superset-secret
 
-# Enable example data & dashboards (includes a config section see below)
 # extraConfigs: 
-#   import_datasources.yaml: |
-#       databases:
-#       - allow_file_upload: true
-#         allow_ctas: true
-#         allow_cvas: true
-#         database_name: example
-#         extra: "{\r\n    \"metadata_params\": {},\r\n    \"engine_params\": {},\r\n    \"\
-#           metadata_cache_timeout\": {},\r\n    \"schemas_allowed_for_file_upload\": []\r\n\
-#           }"
-#         sqlalchemy_uri: sqlite:////app/superset_home/examples.db?check_same_thread=false
-#         tables: []
+#   georchestra_custom_roles.json: |
+#     # Load the Guest_template role that will serve to define the Public role
+#     # Optional
+#     # Import it from config/georchestra_custom_roles.json file
 
 image:
   repository: georchestra/superset
@@ -62,13 +54,43 @@ postgresql:
 # option. Look at the README.md
 
 # extraSecrets: 
+#   Preconfig.py: |
+#     # Custom settings that would need to be run before the remaining config scripts
+#     # Optional (empty by default)
+#     # Import it from config/Preconfig.py file
+
 #   LocalizationFr.py: |
-#     # Custom some settings for FR locale
+#     # Custom settings for FR locale
 #     # Import it from config/LocalizationFr.py file
 
 #   GeorchestraCustomizations.py: |
 #     # Import it from config/GeorchestraCustomizations.py file
 
+#   Overrides.py: |
+#     # Custom settings that would override previous config
+#     # Optional (empty by default)
+#     # Import it from config/Overrides.py file
+
+
 # configOverrides: 
 #   customconfig: |
 #     # Import it from config/superset_georchestra_config.py file
+
+
+init:
+  # @default -- a script to create admin user and initialize roles
+  initscript: |-
+    #!/bin/sh
+    set -eu
+    echo "Upgrading DB schema..."
+    superset db upgrade
+    if [ -f "{{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json" ]; then
+      echo "Load the geOrchestra custom roles, including Guest_template"
+      superset fab import-roles -p {{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json
+    fi
+    echo "Initializing roles..."
+    superset init
+    if [ -f "{{ .Values.extraConfigMountPath }}/import_datasources.yaml" ]; then
+      echo "Importing database connections.... "
+      superset import_datasources -p {{ .Values.extraConfigMountPath }}/import_datasources.yaml
+    fi

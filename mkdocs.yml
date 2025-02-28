@@ -63,7 +63,7 @@ nav:
         - Administration:
             - technical_guides/administration/index.md
             - technical_guides/administration/manage_roles.md
-            - technical_guides/administration/making_a_dashboard_public.en.md
+            - technical_guides/administration/making_a_dashboard_public.md
             - technical_guides/administration/import_resources.md
         - Installation:
             - technical_guides/installation/index.md
