@@ -8,18 +8,19 @@ This is very shortly mentioned in the [official Superset doc](https://superset.a
 
 Superset has a role named `Public` that matches unauthenticated visitors. By default, it is empty (they are not allowed in any part of Superset).
 
-What guest visitors will be able to access will depend on each platform. In this section below will assume that your goal is to share only dashboards, without giving them access to the dashboards' configuration or datasets. View-only access. To achieve such goal, the following profile seems sufficient:
+What guest visitors will be able to access will depend on each platform. The section below will assume that your goal is to share only dashboards, without giving access to the dashboards' configuration or datasets. View-only access.  
+To achieve such goal, the following profile seems sufficient:
 
-- here is the basic set of global permissions necessary
+- Here is the basic set of global permissions necessary: 
 ![alt text](images/public_roles.png)
-- To this, it is necessary to add the read permission on the datasets used by the dashboard's charts. See below for more details on how to do it
+- To this, it is necessary to add the read permission on the datasets used by the dashboard's charts. See below for more details on how to do it.
 
 ## How to bootstrap the Public role with such permissions
 
-By default on first startup, the Public role is empty. There are at least 2 ways to set those permissions for the `Public` role:
+By default on first startup, the `Public` role is empty. There are at least 2 ways to set those permissions for the `Public` role:
 
-- **Option 1** is to add _manually_ some ACLs into this role, after having deployed Superset. 
-- **Option 2** is proposed in the Superset doc: one can set the `PUBLIC_ROLE_LIKE` config parameter to another role that will serve as template for the `Public` role. During the `superset init` phase, Superset will _merge_ all permissions listed in the template into the Public role. The trick is that, in this wase, we want to use as template a role that doesn't exist yet. This can be done by first importing the template role and is documented just below.
+- **Option 1** is to add _manually_ some ACLs into this role, after having deployed Superset (if logged in with `Admin` role, you can edit the `Public` role and add ACLs).
+- **Option 2** is proposed in the Superset doc: one can set the `PUBLIC_ROLE_LIKE` config parameter to another role that will serve as template for the `Public` role. During the `superset init` phase, Superset will _merge_ all permissions listed in the template into the `Public` role. The trick is that, in this phase, we want to use as template a role that doesn't exist yet. This can be solved by first importing the template role. This procedure is documented just below.
 
 ### Importing the Guest_template role
 
@@ -38,7 +39,7 @@ superset fab import-roles -p georchestra_custom_roles.json
 
 And, of course, it is necessary to uncomment the proper configuration parameter in [superset_georchestra_config.py](https://github.com/georchestra/superset/blob/main/config/superset/superset_georchestra_config.py#L60): `PUBLIC_ROLE_LIKE = "Guest_template"`
 
-Then you can run the next startup stages, including `superset init`
+Then you can run the next startup stages, including `superset init`.
 
 #### On docker compose
 - In [superset_georchestra_config.py](https://github.com/georchestra/superset/blob/main/config/superset/superset_georchestra_config.py#L60), uncomment the `PUBLIC_ROLE_LIKE = "Guest_template"` line.
@@ -50,13 +51,13 @@ _**Beware that running it this way, the `Guest_template` role will be reset each
 
 #### On kubernetes
 - In [superset_georchestra_config.py](https://github.com/georchestra/superset/blob/main/config/superset/superset_georchestra_config.py#L60), uncomment the `PUBLIC_ROLE_LIKE = "Guest_template"` line.
-- In the helm chart, set the extraConfigs."georchestra_custom_roles\.json" file. The [init script](https://github.com/georchestra/superset/blob/main/kubernetes/georchestra-values.yaml#L80) will load the roles defined in there at startup, including the `Guest_template` one.
+- In the helm chart, set the `extraConfigs."georchestra_custom_roles\.json"` file. The [init script](https://github.com/georchestra/superset/blob/main/kubernetes/georchestra-values.yaml#L80) will load the roles defined in there at startup, including the `Guest_template` one.
 
 _**Beware that running it this way, the `Guest_template` role will be reset each time the `superset init` script is run (each redeploy).**_
 
 ## Add read permissions to the dataset
 
-Once set the basic permissions to the Public role, as documented above, it is still necessary to grant access to the datasets used by the dashboard you want to make public.
+Once set the basic permissions to the `Public` role, as documented above, it is still necessary to grant access to the datasets used by the dashboard you want to make public.
 
 You could either add them in the `Guest_template` role, in which case the init script needs to be run again to merge the roles into `Public` role. Or you can define them directly in `Public` from the GUI.
 
@@ -84,6 +85,6 @@ By granting access to the database, access is inherited to the charts and dashbo
 
 ***This is the safest and the recommended way***. 
 
-It requires to add to the `Public` role the permissions `datasource access on [name of your database].[name of your datasource]`. If your dahsbord relies on many datasources, this may mean adding a lot of permission items (one per datasource). But this ensures an access limited to the smallest data perimeter.
+It requires to add to the `Public` role the permissions `datasource access on [name of your database].[name of your datasource]`. If your dashboard relies on many datasources, this may mean adding a lot of permission items (one per datasource). But this ensures an access limited to the smallest data perimeter.
 
 
