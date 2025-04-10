@@ -27,7 +27,7 @@ envFromSecret: my-georchestra-custom-superset-secret
 
 image:
   repository: georchestra/superset
-  tag: 20250220-1109-2eb787d98
+  tag: snapshot-20250410-0957-b79ef56c4
 
 supersetNode:
   startupProbe: 
