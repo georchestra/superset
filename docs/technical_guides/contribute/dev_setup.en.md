@@ -59,29 +59,31 @@ Building the javascript static assets is in the end a bit tricky with the docker
 
 For dev purposes, it's simpler to build manually:
 ```bash
+# Disable SCARF analytics reporting
+export SCARF_ANALYTICS=false
+
+# Use Node 20 (code "iron")
 nvm install lts/iron
 nvm use lts/iron
 
-cd superset-frontend
 # Install dependencies from `package-lock.json`
-npm install
-# not sure this one is necessary:
-npm ci
-npm run build
+npm --prefix superset-frontend prune
+npm --prefix superset-frontend install
+npm --prefix superset-frontend run build
+
 # Build i18n support
-npm run build-translation
-cd -
+npm --prefix superset-frontend run build-translation
 ```
 or   
-`make -f Makefile-geor frontend`
+`./build-frontend.sh`
 
 ## Build python translations
-`pybabel compile -d superset/translations`  
-Generates a lot of error messages, but this is working still
+`pybabel compile -d superset/translations | true`  
+Generates a lot of error messages, but this is working still (piping to true ensure a positive outcome)
 
 or   
 
-`make -f Makefile-geor translations`  
+`./build-frontend.sh`
 builds the frontend and both translations in one go
 
 ## Run setup
