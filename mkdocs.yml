@@ -78,6 +78,7 @@ nav:
             - technical_guides/installation/tests.md
         - Contribute:
             - technical_guides/contribute/index.md
+            - technical_guides/contribute/dev_setup.md
             - technical_guides/contribute/feature_matrix.md
 
 markdown_extensions:
