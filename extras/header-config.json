@@ -58,8 +58,7 @@
       "label": "Superset",
       "i18n": "superset",
       "url": "/superset",
-      "activeAppUrl": "/superset",
-      "hasRole": "ROLE_USER"
+      "activeAppUrl": "/superset"
     },
     {
       "hasRole": "ROLE_SUPERUSER,ROLE_GN_EDITOR,ROLE_GN_ADMIN,ROLE_MAPSTORE_ADMIN",
