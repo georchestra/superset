@@ -1,6 +1,7 @@
 # Superset specific config
 
 import logging
+from datetime import timedelta
 from os import environ
 
 logger = logging.getLogger(__name__)
@@ -10,13 +11,13 @@ logging.basicConfig(
 )
 
 # Optionally import Preconfig.py (which will have been included on
-# the PYTHONPATH) in order to allow to set some variables that will be 
-# necessary here , e.g. REDIS_BASE_URL that is not set, when running 
+# the PYTHONPATH) in order to allow to set some variables that will be
+# necessary here , e.g. REDIS_BASE_URL that is not set, when running
 # non-dockerized deployment
 #
 try:
     import Preconfig
-    from Preconfig import *  
+    from Preconfig import *
 
     logger.info(
         f"Loaded your preconfig parameters from " f"[{Preconfig.__file__}]"
@@ -24,7 +25,6 @@ try:
 except ImportError:
     # No preconfig
     pass
-
 
 ## Security
 # You can generate a strong key using `openssl rand -base64 42`
@@ -42,55 +42,61 @@ ROW_LIMIT = 5000
 SUPERSET_WEBSERVER_PORT = 8088
 APPKEY = 'superset'
 
-# disable telemetry
-SCARF_ANALYTICS = False
 # geOrchestra-specific login logic
 from flask_appbuilder.const import AUTH_REMOTE_USER
 from GeorchestraCustomizations import GeorchestraSecurityManager, app_init
+
+# Having a very short session lifetime allows us to avoid having to care about
+# logged-in user having its roles changed (this case is not taken care of in
+# the RemoteUserLogin class, instead we rely on this short session lifetime: the user
+# will be re-logged-in often enough that we won't notice
+PERMANENT_SESSION_LIFETIME = timedelta(seconds=30)
+
 AUTH_TYPE = AUTH_REMOTE_USER
 CUSTOM_SECURITY_MANAGER = GeorchestraSecurityManager
 APP_INITIALIZER = app_init
-# GEORCHESTRA_ORG_AS_ROLE=False
 GEORCHESTRA_ROLES_PREFIX = "ROLE_SUPERSET_"
 # Can configure the header from the georchestra default.properties file
-# GEORCHESTRA_PROPERTIES_FILE_PATH="/etc/georchestra/default.properties"
-#GEORCHESTRA_NOHEADER=True
+# GEORCHESTRA_PROPERTIES_FILE_PATH = "/etc/georchestra/default.properties"
+# GEORCHESTRA_NOHEADER = False
 # Can also configure the header directly here with the following params
-# GEORCHESTRA_HEADER_SCRIPT="https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js"
-# GEORCHESTRA_HEADER_HEIGHT=90
-# GEORCHESTRA_HEADER_URL="/header/"
-# GEORCHESTRA_HEADER_CONFIG_FILE="/header-config.json"
-# GEORCHESTRA_HEADER_USE_LEGACY_HEADER="true"
-# GEORCHESTRA_HEADER_STYLESHEET="http://my-domain-name/stylesheet.css"
-# GEORCHESTRA_LOGO_URL="https://www.georchestra.org/public/georchestra-logo.svg"
-# PUBLIC_ROLE_LIKE = "Guest_template"
+# GEORCHESTRA_HEADER_SCRIPT = "https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js"
+# GEORCHESTRA_HEADER_HEIGHT = 90
+# GEORCHESTRA_HEADER_URL = "/header/"
+# GEORCHESTRA_HEADER_CONFIG_FILE = "/header-config.json"
+# GEORCHESTRA_HEADER_USE_LEGACY_HEADER = "true"
+# GEORCHESTRA_HEADER_STYLESHEET = "http://my-domain-name/stylesheet.css"
+# GEORCHESTRA_LOGO_URL = "https://www.georchestra.org/public/georchestra-logo.svg"
+# Guest_template role is used to bootstrap the Public role
+# See https://docs.georchestra.org/superset/en/latest/technical_guides/administration/making_a_dashboard_public/#importing-the-guest_template-role
+PUBLIC_ROLE_LIKE = "Guest_template"
 AUTH_USER_REGISTRATION_ROLE = "Public"
-LOGOUT_REDIRECT_URL="/logout"
-LOGIN_REDIRECT_URL="/login?service="
+LOGOUT_REDIRECT_URL = "/logout"
+LOGIN_REDIRECT_URL = "/login?service="
 
-from LocalizationFr import *  
+from LocalizationFr import *
 
 # Redefine home page (Superset default is /superset/welcome)
 # You can either define a path (including the potential prefix)
 # or a view name
 # HOME_PAGE_PATH="/superset/dashboard/list"
-HOME_PAGE_VIEW="DashboardModelView.list"
+HOME_PAGE_VIEW = "DashboardModelView.list"
 
 DOCUMENTATION_URL = "https://docs.georchestra.org/en/superset/"
-
 
 ################################
 # Geo2france custom config
 ################################
 
-EXTRA_CATEGORICAL_COLOR_SCHEMES =   [
+EXTRA_CATEGORICAL_COLOR_SCHEMES = [
     {
         "id": 'Geo2FranceDefault',
         "description": '',
         "label": 'Geo2France Default',
         "isDefault": False,
         "colors":
-         ['#2f85cd','#7900c4','#f700a6','#ff5754','#ffb255','#fbf752','#8eec46','#b2d9cb']
+            ['#2f85cd', '#7900c4', '#f700a6', '#ff5754', '#ffb255', '#fbf752',
+             '#8eec46', '#b2d9cb']
     },
     {
         "id": 'Geo2FranceAlternative',
@@ -98,7 +104,8 @@ EXTRA_CATEGORICAL_COLOR_SCHEMES =   [
         "label": 'Geo2France Alternative',
         "isDefault": False,
         "colors":
-         ['#dfe4ea','#5892ee','#8bc832','#8899a8','#155fd5','#456218','#061d41']
+            ['#dfe4ea', '#5892ee', '#8bc832', '#8899a8', '#155fd5', '#456218',
+             '#061d41']
     },
     {
         "id": 'Geo2FranceFull',
@@ -106,11 +113,16 @@ EXTRA_CATEGORICAL_COLOR_SCHEMES =   [
         "label": 'Geo2FranceFull',
         "isDefault": False,
         "colors":
-         ['#2f85cd','#7900c4','#f700a6','#ff5754','#ffb255','#fbf752','#8eec46','#b2d9cb','#005fb2','#2900a7','#c6007c','#ff3001','#ff9000','#fee300','#8bc800','#00b966','#6ca6d8','#836ad2','#e370b9','#ff9881','#ffc781','#fff07e','#c1e372','#6ddcaa','#0f4395','#210083','#9f0064','#cd2601','#cd7300','#cdb600','#709f02','#007c48']
+            ['#2f85cd', '#7900c4', '#f700a6', '#ff5754', '#ffb255', '#fbf752',
+             '#8eec46', '#b2d9cb', '#005fb2', '#2900a7', '#c6007c', '#ff3001',
+             '#ff9000', '#fee300', '#8bc800', '#00b966', '#6ca6d8', '#836ad2',
+             '#e370b9', '#ff9881', '#ffc781', '#fff07e', '#c1e372', '#6ddcaa',
+             '#0f4395', '#210083', '#9f0064', '#cd2601', '#cd7300', '#cdb600',
+             '#709f02', '#007c48']
     }
 ]
 
-EXTRA_SEQUENTIAL_COLOR_SCHEMES =  [
+EXTRA_SEQUENTIAL_COLOR_SCHEMES = [
     {
         "id": 'Geo2FranceDivergenteSmall',
         "description": '',
@@ -118,7 +130,7 @@ EXTRA_SEQUENTIAL_COLOR_SCHEMES =  [
         "label": 'Geo2france Divergente Basic',
         "isDefault": False,
         "colors":
-         ['#8BC832','#3758F9','#3758F9','#061D41']
+            ['#8BC832', '#3758F9', '#3758F9', '#061D41']
     },
     {
         "id": 'Geo2FranceDivergenteAlternative',
@@ -127,7 +139,7 @@ EXTRA_SEQUENTIAL_COLOR_SCHEMES =  [
         "label": 'Geo2france Divergente Alternative',
         "isDefault": False,
         "colors":
-         ['#dfe4ea','#0f4395','#d948a5','#061d41']
+            ['#dfe4ea', '#0f4395', '#d948a5', '#061d41']
     },
     {
         "id": 'Geo2FranceDivergente',
@@ -136,10 +148,9 @@ EXTRA_SEQUENTIAL_COLOR_SCHEMES =  [
         "label": 'Geo2france Divergente',
         "isDefault": False,
         "colors":
-         ['#DFE4EA','#8BC832','#3758F9','#061D41']
+            ['#DFE4EA', '#8BC832', '#3758F9', '#061D41']
     },
 ]
-
 
 ################################
 # Web Security config
@@ -182,17 +193,17 @@ TALISMAN_CONFIG = {
         ],
         # unsafe-eval and cdn are necessary for the geOr header webcomponent to work
         "script-src": ["'self'", "'strict-dynamic'", "'unsafe-eval'", "https://cdn.jsdelivr.net/"],
+
         # Those 2 lines are related to iframe embedding (e.g. to embed an mviewer map from another domain)
         # frame-ancestors = allow to embed this superset's visualizations to be embedded in www.geo2france.fr content
         # frame-src = allow to embed for instance a mviewer map from www.geo2france.fr in this Superset instance (in a dashboard)
-        "frame-ancestors" : "www.geo2france.fr", 
+        "frame-ancestors" : "www.geo2france.fr",
         "frame-src" : ["'self'", "www.geo2france.fr"],
     },
     "content_security_policy_nonce_in": ["script-src"],
     "force_https": False,
     "session_cookie_secure": False,
 }
-
 
 ################################
 # Use redis for caching and rate limit
@@ -235,7 +246,7 @@ RATELIMIT_STORAGE_OPTIONS = {"socket_connect_timeout": 30}
 #
 try:
     import Overrides
-    from Overrides import *  
+    from Overrides import *
 
     logger.info(
         f"Loaded your preconfig parameters from " f"[{Overrides.__file__}]"
