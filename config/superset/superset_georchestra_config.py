@@ -1,12 +1,13 @@
 # Superset specific config
 
 import logging
+from os import environ
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-## Create a StreamHandler
-handler = logging.StreamHandler()
-logger.addHandler(handler)
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level = environ.get('LOG_LEVEL', 'INFO').upper(),
+    handlers = [logging.StreamHandler()]
+)
 
 # Optionally import Preconfig.py (which will have been included on
 # the PYTHONPATH) in order to allow to set some variables that will be 
