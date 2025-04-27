@@ -1,7 +1,12 @@
 # Superset specific config
 
 import logging
-logger=logging.getLogger()
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+## Create a StreamHandler
+handler = logging.StreamHandler()
+logger.addHandler(handler)
 
 # Optionally import Preconfig.py (which will have been included on
 # the PYTHONPATH) in order to allow to set some variables that will be 
