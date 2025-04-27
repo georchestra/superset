@@ -4,6 +4,8 @@ import logging
 from datetime import timedelta
 from os import environ
 
+from superset.utils.log import StdOutEventLogger, DBEventLogger
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level = environ.get('LOG_LEVEL', 'INFO').upper(),
@@ -44,7 +46,7 @@ APPKEY = 'superset'
 
 # geOrchestra-specific login logic
 from flask_appbuilder.const import AUTH_REMOTE_USER
-from GeorchestraCustomizations import GeorchestraSecurityManager, app_init
+from GeorchestraCustomizations import GeorchestraSecurityManager, app_init, NullEventLogger
 
 # Having a very short session lifetime allows us to avoid having to care about
 # logged-in user having its roles changed (this case is not taken care of in
@@ -73,6 +75,16 @@ PUBLIC_ROLE_LIKE = "Guest_template"
 AUTH_USER_REGISTRATION_ROLE = "Public"
 LOGOUT_REDIRECT_URL = "/logout"
 LOGIN_REDIRECT_URL = "/login?service="
+
+# Disable default event logging (stored in DB by default, which can bloat the DB,
+# cf https://github.com/apache/superset/discussions/23110).
+# Alternatives are StdOutEventLogger or DBEventLogger (default).
+if environ.get('LOG_EVENTS_STDOUT', 'false') in ['true', 'yes']:
+    logger.debug("EVENT_LOGGER = StdOutEventLogger()")
+    EVENT_LOGGER = StdOutEventLogger()
+else:
+    logger.debug("EVENT_LOGGER = NullEventLogger()")
+    EVENT_LOGGER = NullEventLogger()
 
 from LocalizationFr import *
 

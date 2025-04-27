@@ -287,3 +287,24 @@ def app_init(app):
 # Alternatively, this should also be possible using FLASK_APP_MUTATOR
 # see https://superset.apache.org/docs/configuration/configuring-superset/
 # or https://stackoverflow.com/questions/51776567/superset-customization-extend-modify
+
+
+class NullEventLogger(AbstractEventLogger):
+    """Event logger that does nothing"""
+
+    def log(  # pylint: disable=too-many-arguments
+        self,
+        user_id: int | None,
+        action: str,
+        dashboard_id: int | None,
+        duration_ms: int | None,
+        slice_id: int | None,
+        referrer: str | None,
+        curated_payload: dict[str, Any] | None,
+        curated_form_data: dict[str, Any] | None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        pass
+
+# TODO: an event logger that will log interesting events to the analytics module
