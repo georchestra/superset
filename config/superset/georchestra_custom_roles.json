@@ -92,6 +92,14 @@
       },
       {
         "permission": {
+          "name": "can_log"
+        },
+        "view_menu": {
+          "name": "Superset"
+        }
+      },
+      {
+        "permission": {
           "name": "menu_access"
         },
         "view_menu": {
