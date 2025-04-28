@@ -4,13 +4,15 @@ import logging
 from datetime import timedelta
 from os import environ
 
-from superset.utils.log import StdOutEventLogger, DBEventLogger
+from GeorchestraCustomizations import CustomLoggingConfigurator
+from superset.utils.log import StdOutEventLogger
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level = environ.get('LOG_LEVEL', 'INFO').upper(),
-    handlers = [logging.StreamHandler()]
-)
+
+LOG_LEVEL = environ.get('LOG_LEVEL', 'INFO').upper()
+# Override LOGGING_CONFIGURATOR from
+# https://github.com/apache/superset/blob/master/superset/config.py#L933
+LOGGING_CONFIGURATOR = CustomLoggingConfigurator()
 
 # Optionally import Preconfig.py (which will have been included on
 # the PYTHONPATH) in order to allow to set some variables that will be

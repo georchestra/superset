@@ -1,9 +1,10 @@
 import logging
+import warnings
 from configparser import ConfigParser
 from itertools import chain
 from typing import Any
 
-from flask import redirect, request, url_for
+from flask import redirect, request, url_for, config as flask_config
 from flask_appbuilder import expose, IndexView
 from flask_appbuilder.security.decorators import no_cache
 from flask_appbuilder.security.views import AuthRemoteUserView
@@ -13,6 +14,7 @@ from superset import SupersetSecurityManager, appbuilder, security_manager as sm
 from superset.app import SupersetAppInitializer
 from superset.superset_typing import FlaskResponse
 from superset.utils.log import AbstractEventLogger
+from superset.utils.logging_configurator import LoggingConfigurator
 
 logger = logging.getLogger(__name__)
 
@@ -308,3 +310,21 @@ class NullEventLogger(AbstractEventLogger):
         pass
 
 # TODO: an event logger that will log interesting events to the analytics module
+
+
+class CustomLoggingConfigurator(LoggingConfigurator):
+    def configure_logging(
+        self, app_config: flask_config.Config, debug_mode: bool
+    ) -> None:
+        if app_config["SILENCE_FAB"]:
+            logging.getLogger("flask_appbuilder").setLevel(logging.ERROR)
+
+        # Ignore Werkzeug LocalProxy errors. Doesn't seem to work right now)
+        # https://github.com/apache/superset/issues/29403#issuecomment-2532848376
+        warnings.filterwarnings("ignore", message = ".*werkzeug.local.LocalProxy.*")
+
+        # basicConfig() will set up a default StreamHandler on stderr
+        logging.basicConfig(format=app_config["LOG_FORMAT"])
+        logging.getLogger().setLevel(app_config["LOG_LEVEL"])
+
+        logger.info("Logging was configured successfully using CustomLoggingConfigurator")
