@@ -11,6 +11,7 @@
     - Add in superset_georchestra_config.py the connection string to the Postgresql App DB (e.g. `SQLALCHEMY_DATABASE_URI = "postgresql://superset:superset@localhost/georchestra"`)
     - Add in superset_georchestra_config.py the connection string to the redis instanceB (e.g.`REDIS_BASE_URL="redis://localhost:6379"`)
     - generate and add the [SECRET_KEY](https://superset.apache.org/docs/configuration/configuring-superset/#adding-an-initial-secret_key)
+    - you will probably want to read [making a dashboard Public](../administration//making_a_dashboard_public.en.md#how-to-bootstrap-the-public-role-with-such-permissions) and import the `Guest_template` role before running the app. Or disable the line `PUBLIC_ROLE_LIKE = "Guest_template"` in [superset_georchestra_config.py](https://github.com/georchestra/superset/blob/main/config/superset/superset_georchestra_config.py#L76)
 - run the app. You can optionally make it a system _service_. Set the `superset_app_root` value to the path prefix you want to server your app on (matching the config in the SP/gateway)
 
 ```

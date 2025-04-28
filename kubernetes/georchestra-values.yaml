@@ -10,6 +10,14 @@ extraEnvRaw:
     value: "/superset"
   - name: SUPERSET_LOAD_EXAMPLES
     value: "no"
+  - name: LOG_LEVEL
+    value: "info"
+  - name: GUNICORN_KEEPALIVE
+    value: "30"
+  - name: SERVER_THREADS_AMOUNT
+    value: "10"
+  - name: SERVER_WORKER_AMOUNT
+    value: "10"
 
 
 secretEnv:
@@ -27,7 +35,7 @@ envFromSecret: my-georchestra-custom-superset-secret
 
 image:
   repository: georchestra/superset
-  tag: snapshot-20250410-0957-b79ef56c4
+  tag: snapshot-20250428-1147-0d6298c29
 
 supersetNode:
   startupProbe: 

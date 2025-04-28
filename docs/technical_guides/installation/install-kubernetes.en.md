@@ -25,13 +25,21 @@ Deploy your secret, it will be necessary afterward.
 
 ## georchestra-values.yaml file
 
-We provide you with an example helm values file in `kubernetes/georchestra-values.yaml`. Here's the leanest version of it:
+We provide you with an example helm values file in `kubernetes/georchestra-values.yaml`. Here's a lean version of it:
 ```yaml
 extraEnvRaw: 
   - name: SUPERSET_APP_ROOT
     value: "/superset"
   - name: SUPERSET_LOAD_EXAMPLES
     value: "no"
+  - name: LOG_LEVEL
+    value: "info"
+  - name: GUNICORN_KEEPALIVE
+    value: "30"
+  - name: SERVER_THREADS_AMOUNT
+    value: "10"
+  - name: SERVER_WORKER_AMOUNT
+    value: "10"
 
 secretEnv:
   create: false
@@ -41,7 +49,7 @@ envFromSecret: my-georchestra-custom-superset-secret
 
 image:
   repository: georchestra/superset
-  tag: snapshot-20250410-0957-b79ef56c4
+  tag: snapshot-20250428-1147-0d6298c29
 
 supersetNode:
   startupProbe: 
@@ -57,6 +65,24 @@ supersetNode:
 postgresql:
   # Use geOrchestra's PostgreSQL app DB.
   enabled: false
+
+init:
+  # @default -- a script to create admin user and initialize roles
+  initscript: |-
+    #!/bin/sh
+    set -eu
+    echo "Upgrading DB schema..."
+    superset db upgrade
+    if [ -f "{{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json" ]; then
+      echo "Load the geOrchestra custom roles, including Guest_template"
+      superset fab import-roles -p {{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json
+    fi
+    echo "Initializing roles..."
+    superset init
+    if [ -f "{{ .Values.extraConfigMountPath }}/import_datasources.yaml" ]; then
+      echo "Importing database connections.... "
+      superset import_datasources -p {{ .Values.extraConfigMountPath }}/import_datasources.yaml
+    fi
 ```
 
 !!! tip "Tip"
@@ -74,12 +100,14 @@ There are several config files to load:
 - **config/superset/GeorchestraCustomizations.py** provides georchestra-specific logic
     - authentication: rely on REMOTE_USER auth (http sec- headers fed by the gateway/SP)
     - redirection to a custom welcome page
+- **config/superset/georchestra_custom_roles.json** provides a `Guest_template` role served to bootstrap the `Public` role (see [making a dashboard Public](../administration/making_a_dashboard_public.en.md#how-to-bootstrap-the-public-role-with-such-permissions)). It is imported by the adapted `initscript` above.
 
 When running your `helm install` command, you will load them with the following options
 ```
   --set-file extraSecrets."LocalizationFr\.py"=config/superset/LocalizationFr.py \
   --set-file extraSecrets."GeorchestraCustomizations\.py"=config/superset/GeorchestraCustomizations.py \
   --set-file configOverrides.customconfig=config/superset/superset_georchestra_config.py \
+  --set-file extraConfigs."georchestra_custom_roles\.json"=config/superset/georchestra_custom_roles.json \
 ```
 
 ## Helm install
@@ -99,6 +127,7 @@ helm upgrade --install -n sup mysuperset superset/superset \
   --set-file extraSecrets."GeorchestraCustomizations\.py"=config/superset/GeorchestraCustomizations.py \
   --set envFromSecret=geor-demo-sec-superset-secrets \
   --set-file configOverrides.customconfig=config/superset/superset_georchestra_config.py \
+  --set-file extraConfigs."georchestra_custom_roles\.json"=config/superset/georchestra_custom_roles.json \
   --set configOverrides.secretkey="SECRET_KEY = env('SUPERSET_SECRET_KEY')"
 ```
 
