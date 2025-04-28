@@ -92,13 +92,13 @@ init:
     set -eu
     echo "Upgrading DB schema..."
     superset db upgrade
-    if [ -f "{{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json" ]; then
+    if [ -f "/app/configs/georchestra_custom_roles.json" ]; then
       echo "Load the geOrchestra custom roles, including Guest_template"
-      superset fab import-roles -p {{ .Values.extraConfigMountPath }}/georchestra_custom_roles.json
+      superset fab import-roles -p /app/configs/georchestra_custom_roles.json
     fi
     echo "Initializing roles..."
     superset init
-    if [ -f "{{ .Values.extraConfigMountPath }}/import_datasources.yaml" ]; then
+    if [ -f "/app/configs/import_datasources.yaml" ]; then
       echo "Importing database connections.... "
-      superset import_datasources -p {{ .Values.extraConfigMountPath }}/import_datasources.yaml
+      superset import_datasources -p /app/configs/import_datasources.yaml
     fi
