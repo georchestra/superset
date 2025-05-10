@@ -50,16 +50,12 @@ APPKEY = 'superset'
 from flask_appbuilder.const import AUTH_REMOTE_USER
 from GeorchestraCustomizations import GeorchestraSecurityManager, app_init, NullEventLogger
 
-# Having a very short session lifetime allows us to avoid having to care about
-# logged-in user having its roles changed (this case is not taken care of in
-# the RemoteUserLogin class, instead we rely on this short session lifetime: the user
-# will be re-logged-in often enough that we won't notice
-PERMANENT_SESSION_LIFETIME = timedelta(seconds=30)
-
 AUTH_TYPE = AUTH_REMOTE_USER
 CUSTOM_SECURITY_MANAGER = GeorchestraSecurityManager
 APP_INITIALIZER = app_init
 GEORCHESTRA_ROLES_PREFIX = "ROLE_SUPERSET_"
+# Check if user roles list needs to be updated. Means DB access so we don't want it to happen too often
+GEORCHESTRA_ROLES_CHECK_FREQUENCY = 5 #minutes
 # Can configure the header from the georchestra default.properties file
 # GEORCHESTRA_PROPERTIES_FILE_PATH = "/etc/georchestra/default.properties"
 # GEORCHESTRA_NOHEADER = False

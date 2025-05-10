@@ -1,6 +1,7 @@
 import logging
 import warnings
 from configparser import ConfigParser
+from datetime import datetime, timedelta
 from itertools import chain
 from typing import Any
 
@@ -66,26 +67,49 @@ class GeorchestraSecurityManager(SupersetSecurityManager):
 
 class RemoteUserLogin(object):
     # found at https://github.com/apache/superset/discussions/27451
+    
+    # Frequence to check if user roles list needs to be updated, in minutes. Means DB 
+    # access so we don't want it to happen too often
+    roles_default_check_frequency = 5
+    
+    # A dict. Stores for each logged-in username the last time the roles were checked
+    roles_checks = dict()
 
     def __init__(self, app):
         self.app = app
 
         self.ROLES_PREFIX = app.config.get("GEORCHESTRA_ROLES_PREFIX", "ROLE_SUPERSET_")
+        self.ROLES_CHECK_FREQUENCY = app.config.get("GEORCHESTRA_ROLES_CHECK_FREQUENCY",
+                                                     self.roles_default_check_frequency)
+        try:
+            self.ROLES_CHECK_FREQUENCY = int(self.ROLES_CHECK_FREQUENCY)
+        except ValueError:
+            self.ROLES_CHECK_FREQUENCY = self.roles_default_check_frequency
+            logger.warning(f"Invalid value for ROLES_CHECK_FREQUENCY: {self.ROLES_CHECK_FREQUENCY}. Using default value: {self.roles_default_check_frequency}")
+
         self.AUTH_USER_DEFAULT_ROLE = app.config.get("AUTH_USER_REGISTRATION_ROLE",
                                                      "Public")
         # We need the user to have at least a Public role, no role at all is _bad_
 
-    def get_roles_from_header(self, georchestra_roles: str) -> list[str]:
+    def get_valid_roles_from_header(self, georchestra_roles: str) -> list[str]:
         """
         Split and filter roles based on the list provided in the HTTP headers
         :param georchestra_roles: comma-separated list of geOrchestra roles. superset relevant roles are expected
         to have a ROLE_SUPERSET_ prefix
         :return: a list of superset-relevant roles
         """
+        all_superset_roles = sm.get_all_roles()
+
         roles_list = georchestra_roles.split(";");
         superset_roles = [role.replace(self.ROLES_PREFIX, "", 1).upper() for role in
                           roles_list if role.startswith(self.ROLES_PREFIX)]
-        return superset_roles
+
+        valid_roles = [r for r in all_superset_roles if r.name.upper() in superset_roles]
+        if not valid_roles:
+            # We need the user to have at least a role. If none, let it be `Public`
+            valid_roles = [sm.find_role(self.AUTH_USER_DEFAULT_ROLE)]
+        return valid_roles
+
 
     def log_user(self, environ) -> tuple[object, bool]:
         """
@@ -94,7 +118,13 @@ class RemoteUserLogin(object):
         Logic is as follows:
         - check if we have a currently logged in user
             - yes ? -> we check if the username in the sec-headers matches the currently
-            logged in user => we're good, no change, we return the logged in user. It's
+            logged in user.
+            We also might do a periodical roles-check. It doesn't make sense to check
+            everytime, but once every, says, 5 mins. To cover the case where a user is
+            still logged in but his roles list has changed (would not be detected
+            automatically). In that case if necessary we update the user with the
+            updated roles.
+            => we're good, no change, we return the logged in user. It's
             the most common use-case, so we make it the priority and quit the function
             as fast as possible
             - no ?  -> the user changed since last request, log him out continue (new
@@ -119,7 +149,21 @@ class RemoteUserLogin(object):
         if current_user and current_user.is_authenticated:
             if current_user.username == headers_username:
                 logging.debug(f"Remote user {headers_username} already logged")
-                return current_user, is_different_user
+                # Check if roles have changed since the session was started
+                # Check is done every GEORCHESTRA_ROLES_CHECK_FREQUENCY times only,
+                # to avoid calling DB on each call of the log_user function
+                # (can happen more than 10 times per page load)
+                last_check = self.roles_checks.get(headers_username, datetime.fromtimestamp(0))
+                if datetime.now() > last_check + timedelta(minutes=self.ROLES_CHECK_FREQUENCY):
+                    self.roles_checks[headers_username] = datetime.now()
+                    georchestra_roles = environ.get('HTTP_SEC_ROLES', "")
+                    r = self.get_valid_roles_from_header(georchestra_roles)
+                    if r != current_user.roles:
+                        # Then update roles in user definition
+                        current_user.roles = r
+                        sm.update_user(current_user)
+                        login_user(current_user)
+                return current_user, False
             else:
                 # The user changed since last request, log him out and switch to new user
                 logout_user()
@@ -129,7 +173,7 @@ class RemoteUserLogin(object):
         if not headers_username:
             # Log out eventually logged-in previous user and switch to anonymous
             logout_user()
-            return None, is_different_user
+            return None, True
         else:
             logger.debug(f"Remote user {headers_username} logs in")
 
@@ -140,21 +184,15 @@ class RemoteUserLogin(object):
         user = sm.find_user(username=headers_username)
         # Retrieve roles from http header and filter to the ones relevant in Superset context
         georchestra_roles = environ.get('HTTP_SEC_ROLES', "")
-        user_roles = self.get_roles_from_header(georchestra_roles)
-        valid_roles = [r for r in sm.get_all_roles() if r.name.upper() in user_roles]
-        logger.debug(f"Valid roles for current user {headers_username}: {valid_roles}")
-        if not valid_roles:
-            # We need the user to have at least a Public role
-            valid_roles = [sm.find_role(self.AUTH_USER_DEFAULT_ROLE)]
-        logger.debug(f"Valid roles for current user: {valid_roles}")
+        user_roles = self.get_valid_roles_from_header(georchestra_roles)
 
         # Update the user if he exists, create him if not
         if user:
             logger.debug("New user logged in: %s", user.username)
-            if user.roles != valid_roles:
+            if user.roles != user_roles:
                 logger.debug("User exists but roles differ. Updating profile")
                 # Update relevant profile information
-                user.roles = valid_roles
+                user.roles = user_roles
                 sm.update_user(user)
         else:
             # Create user
@@ -165,7 +203,7 @@ class RemoteUserLogin(object):
                         headers_username),
                     last_name=request.headers.environ.get('HTTP_SEC_LASTNAME', ""),
                     email=request.headers.environ.get('HTTP_SEC_EMAIL', ""),
-                    role=valid_roles
+                    role=user_roles
                )
 
             user = sm.auth_user_remote_user(headers_username)
