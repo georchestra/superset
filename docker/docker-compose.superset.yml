@@ -21,7 +21,7 @@
 # create you own docker environment file (.envs-superset) with your own
 # unique random secure passwords and SECRET_KEY.
 # -----------------------------------------------------------------------
-x-superset-image: &superset-image georchestra/superset:snapshot-20250428-1147-0d6298c29
+x-superset-image: &superset-image georchestra/superset:snapshot-20250510-1704-bb79ef509
 x-superset-volumes:
   &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
   - superset_home:/app/superset_home

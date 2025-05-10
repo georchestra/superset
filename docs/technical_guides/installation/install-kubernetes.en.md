@@ -25,65 +25,7 @@ Deploy your secret, it will be necessary afterward.
 
 ## georchestra-values.yaml file
 
-We provide you with an example helm values file in `kubernetes/georchestra-values.yaml`. Here's a lean version of it:
-```yaml
-extraEnvRaw: 
-  - name: SUPERSET_APP_ROOT
-    value: "/superset"
-  - name: SUPERSET_LOAD_EXAMPLES
-    value: "no"
-  - name: LOG_LEVEL
-    value: "info"
-  - name: GUNICORN_KEEPALIVE
-    value: "30"
-  - name: SERVER_THREADS_AMOUNT
-    value: "10"
-  - name: SERVER_WORKER_AMOUNT
-    value: "10"
-
-secretEnv:
-  create: false
-  # declare the secret mentioned above
-
-envFromSecret: my-georchestra-custom-superset-secret
-
-image:
-  repository: georchestra/superset
-  tag: snapshot-20250428-1147-0d6298c29
-
-supersetNode:
-  startupProbe: 
-    httpGet:
-        path: /superset/health
-  livenessProbe: 
-    httpGet:
-        path: /superset/health
-  readinessProbe: 
-    httpGet:
-        path: /superset/health
-
-postgresql:
-  # Use geOrchestra's PostgreSQL app DB.
-  enabled: false
-
-init:
-  # @default -- a script to create admin user and initialize roles
-  initscript: |-
-    #!/bin/sh
-    set -eu
-    echo "Upgrading DB schema..."
-    superset db upgrade
-    if [ -f "/app/configs/georchestra_custom_roles.json" ]; then
-      echo "Load the geOrchestra custom roles, including Guest_template"
-      superset fab import-roles -p /app/configs/georchestra_custom_roles.json
-    fi
-    echo "Initializing roles..."
-    superset init
-    if [ -f "/app/configs/import_datasources.yaml" ]; then
-      echo "Importing database connections.... "
-      superset import_datasources -p /app/configs/import_datasources.yaml
-    fi
-```
+We provide you with an example helm values file in [`kubernetes/georchestra-values.yaml`](https://github.com/georchestra/superset/blob/main/kubernetes/georchestra-values.yaml).
 
 !!! tip "Tip"
 
