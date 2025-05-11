@@ -16,6 +16,20 @@ ALTER ROLE superset SET search_path = superset;
 ```
 - Tell Superset to use it. Depending on the deployment method, you will have to configure the SQLAlchemy connection string in the config file, or to set some environment variables. Please follow the instructions below for your chosen deployment method.
 
+## Create and assign roles
+ACLs in Superset are handled with roles, in a similar manner as geOrchestra core logic.
+To give an Admin role to your user:
+- in the geOrchestra console:
+    - create a `SUPERSET_ADMIN` role
+    - give this role to your user (e.g. `testadmin`)
+- and that's all. It will be synchronized when you first log in to Superset.
+
+
+!!! warning "Warning"
+    
+    To optimize the performance, the synchronization of the roles is only done on a regular basis, every 5 minutes by default. This means that if you change roles for a user that is already logged, it will take effect 5 mins later, which should be fine in most cases. If you can't wait, you can delete the session cookie on your browser, and reload the page. You can also make this period shorter by changing the `GEORCHESTRA_ROLES_CHECK_FREQUENCY` setting.
+
+
 ## Configure routing
 
 Routing to your apps, in geOrchestra, is managed by a routing component: the Security Proxy (will soon be deprecated but not yet) or the Gateway.
