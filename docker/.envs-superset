@@ -19,21 +19,14 @@
 PYTHONUNBUFFERED=1
 
 COMPOSE_PROJECT_NAME=superset
-DEV_MODE=true
+DEV_MODE=false
 
 # database configurations (do not modify)
-DATABASE_DB=superset
-DATABASE_HOST=db
+DATABASE_DB=georchestra
+DATABASE_HOST=database
 # Make sure you set this to a unique secure random value on production
 DATABASE_PASSWORD=superset
 DATABASE_USER=superset
-
-EXAMPLES_DB=examples
-EXAMPLES_HOST=db
-EXAMPLES_USER=examples
-# Make sure you set this to a unique secure random value on production
-EXAMPLES_PASSWORD=examples
-EXAMPLES_PORT=5432
 
 # database engine specific environment variables
 # change the below if you prefer another database engine
@@ -43,19 +36,15 @@ POSTGRES_DB=superset
 POSTGRES_USER=superset
 # Make sure you set this to a unique secure random value on production
 POSTGRES_PASSWORD=superset
-#MYSQL_DATABASE=superset
-#MYSQL_USER=superset
-#MYSQL_PASSWORD=superset
-#MYSQL_RANDOM_ROOT_PASSWORD=yes
 
 # Add the mapped in /app/pythonpath_docker which allows devs to override stuff
-PYTHONPATH=/app/pythonpath:/app/docker/pythonpath_dev
-REDIS_HOST=redis
+PYTHONPATH=/app/pythonpath:/etc/georchestra/superset
+SUPERSET_CONFIG_PATH=/etc/georchestra/superset/superset_georchestra_config.py
+REDIS_HOST=superset_redis
 REDIS_PORT=6379
 
-FLASK_DEBUG=true
+FLASK_DEBUG=false
 SUPERSET_APP_ROOT="/superset"
-SUPERSET_ENV=development
 SUPERSET_LOAD_EXAMPLES=yes
 CYPRESS_CONFIG=false
 SUPERSET_PORT=8088

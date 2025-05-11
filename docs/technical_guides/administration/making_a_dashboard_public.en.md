@@ -12,7 +12,20 @@ What guest visitors will be able to access will depend on each platform. The sec
 To achieve such goal, the following profile seems sufficient:
 
 - Here is the basic set of global permissions necessary: 
-![alt text](images/public_roles.png)
+    - `can Read CssTemplate`
+    - `can read Chart`
+    - `can read Dashboard`
+    - `can read DashboardPermalinkRestApi`
+    - `can read ExplorePermalinkRestApi`
+    - `can time range Api`
+    - `can explore json Superset`
+    - `can dashboard permalink Superset`
+    - `can slice Superset`
+    - `can dashboard Superset`
+    - `can warm up cache Superset`
+    - `can log Superset`
+    - `menu access Dashboards`
+
 - To this, it is necessary to add the read permission on the datasets used by the dashboard's charts. See below for more details on how to do it.
 
 ## How to bootstrap the Public role with such permissions

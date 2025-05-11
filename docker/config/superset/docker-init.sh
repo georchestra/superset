@@ -20,6 +20,7 @@ set -e
 #
 # Always install local overrides first
 #
+
 /app/docker/docker-bootstrap.sh
 
 if [ "$SUPERSET_LOAD_EXAMPLES" = "yes" ]; then
@@ -36,13 +37,6 @@ Init Step ${1}/${STEP_CNT} [${2}] -- ${3}
 EOF
 }
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
-# If Cypress run – overwrite the password for admin and export env variables
-if [ "$CYPRESS_CONFIG" == "true" ]; then
-    ADMIN_PASSWORD="general"
-    export SUPERSET_TESTENV=true
-    export POSTGRES_DB=superset_cypress
-    export SUPERSET__SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://superset:superset@db:5432/superset_cypress
-fi
 # Initialize the database
 echo_step "1" "Starting" "Applying DB migrations"
 superset db upgrade

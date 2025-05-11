@@ -1,6 +1,6 @@
 # Deploy with docker
 
-The Superset project ships with docker-compose files. We are providing one, in docker/ folder, that is very close to their docker-compose-image-tag.yml file. 
+The Superset project ships with docker-compose files. We are providing one, in docker/ folder, that is inspired from their docker-compose-image-tag.yml file. 
 
 
 !!! warning "Warning"
@@ -20,18 +20,20 @@ Here are the steps to follow:
   ```bash
   docker compose exec database psql -U georchestra -c "CREATE USER superset WITH ENCRYPTED PASSWORD 'superset'; CREATE SCHEMA AUTHORIZATION superset; ALTER ROLE superset SET search_path = superset;"
   ```
-- copy into your [georchestra docker folder](https://github.com/georchestra/docker) the following files from this repo:
-  - config/ folder (will add a `superset` folder into your config folder)
-  - docker/* files into your geOrchestra `docker` folder
-- Adjust the config files for superset. You should need only to adapt the `superset_georchestra_config.py` file. 
-  - add the connection string lines
-  ```yaml
-  SQLALCHEMY_DATABASE_URI = "postgresql://superset:superset@database/georchestra"
-  REDIS_BASE_URL="redis://redis:6379"
-  ```
-  - generate and add the [SECRET_KEY](https://superset.apache.org/docs/configuration/configuring-superset/#adding-an-initial-secret_key)
+- copy into your [georchestra docker folder](https://github.com/georchestra/docker) the following files from this repo (_and precisely in this order_):
+    - config/ folder (will add a `superset` folder into your config folder)
+    - docker/* files into your geOrchestra `docker` folder
+- Adjust the config files for superset. You should need only to adapt the `superset_georchestra_config.py` file or `Preconfig.py` (declares the DB connection strings)
+    - generate and add the [SECRET_KEY](https://superset.apache.org/docs/configuration/configuring-superset/#adding-an-initial-secret_key)
 
 - Run it, adding the `-f docker-compose.superset` option in your `docker compose` command, e.g.
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.override.yml -d docker-compose.superset.yml up -d
 ```
+- Or you can add it in the `include` section of the main docker-compose.yml:
+```yaml
+include:
+  - ...
+  - docker-compose.superset.yml
+```
+and then simply run `docker compose up -d`
