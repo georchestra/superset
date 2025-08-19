@@ -74,6 +74,9 @@ AUTH_USER_REGISTRATION_ROLE = "Public"
 LOGOUT_REDIRECT_URL = "/logout"
 LOGIN_REDIRECT_URL = "/login?service="
 
+# Enable jinja template processing cf https://superset.apache.org/docs/configuration/sql-templating/#jinja-templates
+FEATURE_FLAGS = { "ENABLE_TEMPLATE_PROCESSING": True }
+
 # Disable default event logging (stored in DB by default, which can bloat the DB,
 # cf https://github.com/apache/superset/discussions/23110).
 # Alternatives are StdOutEventLogger or DBEventLogger (default).
