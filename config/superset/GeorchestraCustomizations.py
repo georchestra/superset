@@ -34,6 +34,7 @@ class GeorchestraRemoteUserView(AuthRemoteUserView):
     login_template = ''
 
     def __init__(self):
+        super().__init__()
         self.LOGIN_REDIRECT_URL = appbuilder.app.config.get("LOGIN_REDIRECT_URL", "")
         self.LOGOUT_REDIRECT_URL = appbuilder.app.config.get("LOGOUT_REDIRECT_URL", "")
 
