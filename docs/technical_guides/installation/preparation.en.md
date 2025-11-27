@@ -17,8 +17,9 @@ ALTER ROLE superset SET search_path = superset;
 - Tell Superset to use it. Depending on the deployment method, you will have to configure the SQLAlchemy connection string in the config file, or to set some environment variables. Please follow the instructions below for your chosen deployment method.
 
 ## Create and assign roles
-ACLs in Superset are handled with roles, in a similar manner as geOrchestra core logic.
+ACLs in Superset are handled with roles, in a similar manner as geOrchestra core logic.  
 To give an Admin role to your user:
+
 - in the geOrchestra console:
     - create a `SUPERSET_ADMIN` role
     - give this role to your user (e.g. `testadmin`)
@@ -42,6 +43,7 @@ It should be sufficient to add the corresponding line in the target-mappings.pro
 ```
 analytic=http://superset_host:8088/superset/
 ```
+
 - adjust the host depending on your setup
 - 8088 is the default port for Superset
 - `/superset` is the path prefix defined under which you want to access your superset instance. You can change it but take care that both occurences in the line have to match, to simplify proxying. You will also have to use the same values when configuring your Superset deployment (see Install-* sections)
@@ -84,4 +86,5 @@ georchestra:
           firstname: true
           lastname: true
 ```
+
 It is important that the gateway provides at least the username, the roles and the email. First and last names are good to have.
