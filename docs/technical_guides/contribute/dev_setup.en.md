@@ -1,5 +1,15 @@
 # Set up a development environment
 
+If you want to contribute to the code integrating Superset with geOrchestra: 
+
+- this happens in the ["configuration" files](https://github.com/georchestra/superset/tree/main/config/superset)
+- but you need
+    - a running Superset environment, with those "config" files (first part of this page)
+    - a way to fake the auth system provided by geOrchestra without having to set up a full-fledged geOrchestra environment. Since the geOrchestra Gateway passes it through HTTP headers, it is quite easy and is explained at the end of this page.
+
+Here are some instructions that should allow you to make all this happen.
+
+
 ## Clone the georchestra superset-core repo (One-time action)
 
 ```bash
