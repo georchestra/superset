@@ -101,7 +101,7 @@ class RemoteUserLogin(object):
         """
         all_superset_roles = sm.get_all_roles()
 
-        roles_list = georchestra_roles.split(";");
+        roles_list = georchestra_roles.split(";")
         superset_roles = [role.replace(self.ROLES_PREFIX, "", 1).upper() for role in
                           roles_list if role.startswith(self.ROLES_PREFIX)]
 
