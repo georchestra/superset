@@ -49,7 +49,17 @@ class GeorchestraRemoteUserView(AuthRemoteUserView):
     @expose('/login/', methods=["GET", "POST"])
     @no_cache
     def login(self):
+        """
+        If LOGIN_REDIRECT_URL is relative, append it to the URL. Should be the 
+        current logic with the Gateway (requires GW >= 2.0.1)
+        If not, redirect to the LOGIN_REDIRECT_URL
+        """
         logger.info("Using custom security manager")
+        next_url = request.args.get("next", "")
+        if (self.LOGIN_REDIRECT_URL.startswith("?")
+            and not next_url.endswith(self.LOGIN_REDIRECT_URL)):
+            # Second part is a failsafe to avoid infinite loop if login strategy is not working as expected
+            return redirect(next_url + self.LOGIN_REDIRECT_URL)
         return redirect(self.LOGIN_REDIRECT_URL)
 
 
