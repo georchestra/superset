@@ -7,26 +7,65 @@ git clone https://github.com/georchestra/superset-core.git
 cd superset-core
 ```
 
-## Config files (One-time action)
+## Python environment
 
-You will want to use a geOrchestra-focused configuration.
+??? warning "If your system-wide version of python is not 3.11"
+    The Superset project, relying heavily on docker, apparently made the choice to stick with a specific version of python for development, python 3.11 at the time of writing this doc. Trying to use a different version of python might prove very tricky, particularly for developement.
+    Unfortunately, each OS will come with a system-supported version of python, and you will be lucky if the versions match.
+    If they don't, instead of struggling with your system version of python, we recommend you make use of [pyenv](https://github.com/pyenv/pyenv). Pyenv allows to manage different versions of python, side by side, and create virtualenvs from them.
+    Windows users will want to look at [pyenv-win](https://github.com/pyenv-win/pyenv-win).
 
-You can copy the content from https://github.com/georchestra/superset/tree/main/config/superset:
+    ### Install and configure python 3.11 using pyenv
+    #### Install pyenv
+    ```bash
+    # pyenv
+    curl -fsSL https://pyenv.run | bash
+    # pyenv bash setup
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(pyenv init - bash)"' >> ~/.bashrc
+    # pyenv necessary libs to install python 3.11
+    sudo apt-get install libncurses5 libncurses5-dev libncursesw5 \
+                        liblzma-dev \
+                        libsqlite3-dev \
+                        libbzip3-dev \
+                        libffi-dev \
+                        libreadline-dev \
+                        tk-dev 
+    ```
+    #### Install python 3.11
+    ```bash
+    pyenv install 3.11.14
+    ```
+    As usual, we'll rather rely on a virtualenv for the dev setup:
+
+    ### Create a virtualenv using pyenv and python 3.11
+    ```bash
+    pyenv versions
+    pyenv virtualenv 3.11.14 superset-pyenv-3.11
+    # gets created in ~/.pyenv/versions/3.11.14/envs/superset-pyenv-3.11/
+    # list virtualenvs with `pyenv virtualenvs`
+    # activate with `pyenv activate superset-pyenv-3.11`
+    ```
+
+
+
+### Install system deps packages for superset
+Not sure it's still necessary.
+
+TODO: Check again on another computer running trixie
+
 ```bash
-mkdir -p config
-for f in superset_georchestra_config.py georchestra_custom_roles.json LocalizationFr.py GeorchestraCustomizations.py; do
-  wget -O config/$f https://raw.githubusercontent.com/georchestra/superset/refs/heads/main/config/superset/$f
-done
+sudo apt install python3-dev python3-setuptools libpq-dev \
+                  libmariadb3 libmariadb-dev-compat \
+                  libldap2-dev libsasl2-dev
 ```
 
-Then you will still have to export the path to those confgi files at each run (see below)
-
-
-## Virtualenv
-
+### Follow Superset installation procedure 
 Set up following https://superset.apache.org/docs/contributing/development#alternatives-to-docker-compose: 
 
 ```bash
+# Only if not using pyenv, see note above
 # Create a virtual environment and activate it (recommended)
 python3 -m venv venv # setup a python3 virtualenv
 source venv/bin/activate
@@ -38,7 +77,24 @@ pip install -r requirements/development.txt
 pip install -e .
 ```
 
+
+
 ## Config files
+
+### One-time action
+You will want to use a geOrchestra-focused configuration.
+
+You can copy the content from https://github.com/georchestra/superset/tree/main/config/superset:
+```bash
+mkdir -p config
+for f in superset_georchestra_config.py georchestra_custom_roles.json LocalizationFr.py GeorchestraCustomizations.py Overrides.py Preconfig.py; do
+  wget -O config/$f https://raw.githubusercontent.com/georchestra/superset/refs/heads/main/config/superset/$f
+done
+```
+
+Then you will still have to export the path to those config files at each run (see below) and tell Superset which file to use as config entrypoint (superset_georchestra_config.py).
+
+### At each run
 Config files are in `config/`
 Activate it running
 ```bash
