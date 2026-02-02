@@ -72,7 +72,10 @@ GEORCHESTRA_ROLES_CHECK_FREQUENCY = 5 #minutes
 PUBLIC_ROLE_LIKE = "Guest_template"
 AUTH_USER_REGISTRATION_ROLE = "Public"
 LOGOUT_REDIRECT_URL = "/logout"
-LOGIN_REDIRECT_URL = "/login?service="
+# This one might be for SP
+# LOGIN_REDIRECT_URL = "/login?service="
+# This one will work best on Gateway >= 2.0.1
+LOGIN_REDIRECT_URL = "?login"
 
 # Disable default event logging (stored in DB by default, which can bloat the DB,
 # cf https://github.com/apache/superset/discussions/23110).
