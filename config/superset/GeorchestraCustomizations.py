@@ -9,7 +9,7 @@ from flask import redirect, request, url_for, config as flask_config
 from flask_appbuilder import expose, IndexView
 from flask_appbuilder.security.decorators import no_cache
 from flask_appbuilder.security.views import AuthRemoteUserView
-from flask_login import logout_user, login_user, current_user
+from flask_login import logout_user as flask_logout_user, login_user as flask_login_user, current_user as flask_current_user
 
 from superset import SupersetSecurityManager, appbuilder, security_manager as sm
 from superset.app import SupersetAppInitializer
@@ -17,7 +17,15 @@ from superset.superset_typing import FlaskResponse
 from superset.utils.log import AbstractEventLogger
 from superset.utils.logging_configurator import LoggingConfigurator
 
+from werkzeug.local import LocalProxy
+
 logger = logging.getLogger(__name__)
+
+def get_flask_current_user():
+    if type(flask_current_user) is LocalProxy:
+        return flask_current_user._get_current_object()
+    return flask_current_user
+
 
 
 class GeorchestraRemoteUserView(AuthRemoteUserView):
@@ -43,15 +51,14 @@ class GeorchestraRemoteUserView(AuthRemoteUserView):
         # In theory never used (logout button from superset is hidden)
         logger.warning(
             "Logged out from GeorchestraRemoteUserView. This is not expected behaviour")
-        logout_user()
+        flask_logout_user()
         return redirect(self.LOGOUT_REDIRECT_URL)
 
     @expose('/login/', methods=["GET", "POST"])
     @no_cache
     def login(self):
         """
-        If LOGIN_REDIRECT_URL is relative, append it to the URL. Should be the 
-        current logic with the Gateway (requires GW >= 2.0.1)
+        If LOGIN_REDIRECT_URL is relative, append it to the URL. Should be the current logic with the Gateway (requires GW >= 2.0.1)
         If not, redirect to the LOGIN_REDIRECT_URL
         """
         logger.info("Using custom security manager")
@@ -156,7 +163,7 @@ class RemoteUserLogin(object):
         """
         is_different_user = False
         headers_username = get_username(environ)
-
+        current_user = get_flask_current_user()
         if current_user and current_user.is_authenticated:
             if current_user.username == headers_username:
                 logging.debug(f"Remote user {headers_username} already logged")
@@ -166,24 +173,27 @@ class RemoteUserLogin(object):
                 # (can happen more than 10 times per page load)
                 last_check = self.roles_checks.get(headers_username, datetime.fromtimestamp(0))
                 if datetime.now() > last_check + timedelta(minutes=self.ROLES_CHECK_FREQUENCY):
+                    logging.debug(f"Checking if roles for {headers_username} are up-to-date since last check ({last_check})")
                     self.roles_checks[headers_username] = datetime.now()
                     georchestra_roles = environ.get('HTTP_SEC_ROLES', "")
                     r = self.get_valid_roles_from_header(georchestra_roles)
-                    if r != current_user.roles:
+                    current_roles=current_user.roles
+                    if set(r) != set(current_user.roles):
                         # Then update roles in user definition
                         current_user.roles = r
                         sm.update_user(current_user)
-                        login_user(current_user)
+                        flask_login_user(current_user)
+                # current_user is actually of type werkzeug.LocalProxy. We should return the underlying object, as explained in https://github.com/apache/superset/issues/29403
                 return current_user, False
             else:
                 # The user changed since last request, log him out and switch to new user
-                logout_user()
+                flask_logout_user()
                 is_different_user = True
 
         # Handle anonymous case (not logged-in)
         if not headers_username:
             # Log out eventually logged-in previous user and switch to anonymous
-            logout_user()
+            flask_logout_user()
             return None, True
         else:
             logger.debug(f"Remote user {headers_username} logs in")
@@ -204,6 +214,7 @@ class RemoteUserLogin(object):
                 logger.debug("User exists but roles differ. Updating profile")
                 # Update relevant profile information
                 user.roles = user_roles
+                user.email =request.headers.environ.get('HTTP_SEC_EMAIL', "")
                 sm.update_user(user)
         else:
             # Create user
@@ -219,7 +230,7 @@ class RemoteUserLogin(object):
 
             user = sm.auth_user_remote_user(headers_username)
 
-        login_user(user)
+        flask_login_user(user)
         return user, is_different_user
 
     def before_request(self):
@@ -229,8 +240,11 @@ class RemoteUserLogin(object):
         :return:
         """
         user, is_different_user = self.log_user(request.environ)
+        logger.debug(f"Current user object is of type {type(user)}")
         if not user:
             logger.debug("Logged in as anonymous user")
+        else:
+            logger.debug(f"User logged in as {user}, roles {user.roles}")
 
 
 class GeorchestraContextProcessor(object):
