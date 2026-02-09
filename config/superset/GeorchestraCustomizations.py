@@ -328,6 +328,8 @@ class RemoteUserLogin(object):
             # Create user
             logger.debug("User not found, creating it")
             user_profile = self._user_from_http_headers()
+            # Rename key "roles" to "role" to match the add_user function definition"
+            user_profile["role"] = user_profile.pop("roles", [])
             user = sm.add_user(**user_profile)
             user = sm.auth_user_remote_user(headers_username)
 
