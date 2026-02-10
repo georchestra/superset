@@ -124,7 +124,7 @@ class GeorchestraSecurityManager(SupersetSecurityManager):
         super(GeorchestraSecurityManager, self).__init__(appbuilder)
 
 
-def get_flask_current_user() -> FabUser:
+def get_flask_current_user() -> Optional[FabUser]:
     """
     Flask's current_user object can actually be of type werkzeug.LocalProxy while we
     expect a flask_appbuilder.security.sqla.models.User type.
@@ -132,7 +132,12 @@ def get_flask_current_user() -> FabUser:
     underlying object, as explained in https://github.com/apache/superset/issues/29403
     """
     if type(flask_current_user) is LocalProxy:
-        return flask_current_user._get_current_object()
+        try:
+            return flask_current_user._get_current_object()
+        except AttributeError as e:
+            logging.error(f"Error getting current user: {e}")
+            return None
+    # else
     return flask_current_user
 
 
