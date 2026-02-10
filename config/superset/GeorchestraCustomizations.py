@@ -226,12 +226,21 @@ class RemoteUserLogin(object):
             valid_roles = [sm.find_role(self.AUTH_USER_DEFAULT_ROLE)]
         return valid_roles
 
-    def _update_user(self, user):
-        user_profile = self._user_from_http_headers()
-
+    def _update_user(self, user: FabUser, user_profile: Optional[dict] = None) -> FabUser:
+        """
+        If important information about the user have changed (roles, email), update
+        the user record in the DB
+        :param user: the user object from the DB
+        :param user_profile: the user profile information retrieved from the HTTP
+        headers
+        :return: the updated user object
+        """
+        if not user_profile:
+            user_profile = self._user_from_http_headers()
         if (
             set(user_profile["roles"]) != set(user.roles)
             or user_profile["email"] != user.email
+            or user_profile["username"] != user.username
         ):
             logger.debug(
                 f"User {user.username} changed since last connection. Updating the profile"
@@ -239,8 +248,8 @@ class RemoteUserLogin(object):
             # Then update user definition
             for k, v in user_profile.items():
                 setattr(user, k, v)
-            sm.update_user(user)
-            flask_login_user(user)
+            success = sm.update_user(user)
+        return user
 
     def log_user(self) -> tuple[object, bool]:
         """
@@ -297,7 +306,7 @@ class RemoteUserLogin(object):
                         f"Checking if roles for {headers_username} are up-to-date since last check ({last_check})"
                     )
                     self.roles_checks[headers_username] = datetime.now()
-                    self._update_user(current_user)
+                    current_user = self._update_user(current_user)
                 return current_user, False
             else:
                 # No match, the user changed since last request, log him out
@@ -318,16 +327,20 @@ class RemoteUserLogin(object):
 
         # Retrieve the user from the DB, if he exists
         user = sm.find_user(username=headers_username)
+        # If not found by username, we still can get one through the email address
+        # (his username may change)
+        user_profile = self._user_from_http_headers()
+        if not user:
+            user = sm.find_user(email=user_profile.get("email"))
         # Retrieve roles from http header and filter to the ones relevant in Superset context
 
         # Update the user if he exists, create him if not
         if user:
             logger.debug("New user logged in: %s", user.username)
-            self._update_user(user)
+            user = self._update_user(user, user_profile)
         else:
             # Create user
             logger.debug("User not found, creating it")
-            user_profile = self._user_from_http_headers()
             # Rename key "roles" to "role" to match the add_user function definition"
             user_profile["role"] = user_profile.pop("roles", [])
             user = sm.add_user(**user_profile)
