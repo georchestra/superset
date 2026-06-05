@@ -117,8 +117,24 @@ class GeorchestraRemoteUserView(AuthRemoteUserView):
         return redirect(get_safe_redirect(next_url))
 
 
+# Temporary fix for https://github.com/apache/superset/issues/40293
+from flask_appbuilder.models.sqla.filters import FilterContains
+from flask_appbuilder.security.sqla.apis import PermissionViewMenuApi
+class SupersetPermissionViewMenuApi(PermissionViewMenuApi):
+    search_columns = ["id", "permission.name", "view_menu.name"]
+
+    def _init_properties(self) -> None:
+        super()._init_properties()
+        for col in ["permission.name", "view_menu.name"]:
+            self._filters._search_filters[col] = [
+                FilterContains(col, self.datamodel)
+            ]
+
+
 class GeorchestraSecurityManager(SupersetSecurityManager):
     authremoteuserview = GeorchestraRemoteUserView
+
+    permission_view_menu_api = SupersetPermissionViewMenuApi
 
     def __init__(self, appbuilder):
         super(GeorchestraSecurityManager, self).__init__(appbuilder)
