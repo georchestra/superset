@@ -3,8 +3,12 @@
 ## About
 The geOrchestra community has chosen Apache Superset to feature a dashboarding capacity.
 
-It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding the capacity to serve Superset under a path prefix (e.g. https://demo.georchestra.org/superset/). This functionality is ported by a PR that is, at the time of writing this doc, not yet merged upstream: https://github.com/apache/superset/pull/30134
+It is currently using a fork of the [upstream repo](https://github.com/apache/superset), adding a bit of geOrchestra "flavour":
+- adds the geOrchestra header (configurable)
+- hides the login/logout buttons, since authentication is handled by the SP/gateway
+- fixes a few french translations not available in the upstream repo
 
+The geOrchestra fork of superset is available at https://github.com/georchestra/superset-core.
 
 ## Use the geOrchestra applicative database for Superset config (so-called "Metadata DB")
 

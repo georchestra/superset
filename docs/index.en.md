@@ -19,5 +19,3 @@ There are actually very little differences with the mainstream Apache Superset, 
 This component is _optional_ and not provided by default. You will have to _add it_ to your platform if not already present.
 
 
-
-

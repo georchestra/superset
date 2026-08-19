@@ -2,6 +2,10 @@
 
 # Setup default language
 BABEL_DEFAULT_LOCALE = "fr"
+LANGUAGES = {
+    'fr': {'flag': 'fr', 'name': 'French'},
+    'en': {'flag': 'us', 'name': 'English'},
+}
 
 # Override the default d3 locale format
 # Default values are equivalent to
