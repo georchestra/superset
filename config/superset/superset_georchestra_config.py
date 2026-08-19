@@ -95,7 +95,7 @@ from LocalizationFr import *
 # HOME_PAGE_PATH="/superset/dashboard/list"
 HOME_PAGE_VIEW = "DashboardModelView.list"
 
-DOCUMENTATION_URL = "https://docs.georchestra.org/en/superset/"
+DOCUMENTATION_URL = "https://docs.georchestra.org/superset/"
 
 ################################
 # Geo2france custom config

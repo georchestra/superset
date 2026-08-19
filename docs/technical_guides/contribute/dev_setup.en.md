@@ -86,17 +86,6 @@ pip install -r requirements/development.txt
 pip install -e .
 ```
 
-
-## Build python translations
-`pybabel compile -d superset/translations | true`  
-Generates a lot of error messages, but this is working still (piping to true ensure a positive outcome)
-
-or   
-
-`./build-frontend.sh`
-builds the frontend and both translations in one go
-
-
 ## Build javascript assets
 If we don't use the docker-compose way to run superset, we need to build at least once the frontend before running Superset (_or we won't get any GUI_)
 
@@ -124,6 +113,20 @@ npm --prefix superset-frontend run build-translation
 or   
 `./build-frontend.sh`
 
+
+## Build python translations
+`pybabel compile -d superset/translations | true`  
+Generates a lot of error messages, but this is working still (piping to true ensure a positive outcome)
+
+or   
+
+`./build-frontend.sh`
+builds the frontend and both translations in one go
+
+!!! note "Note"
+
+    You should always build the jaavscript assets before building the translations: the javascript build also extracts 
+    translations that are included in the global translations build.
 
 
 ## Config files
