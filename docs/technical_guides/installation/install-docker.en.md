@@ -37,3 +37,8 @@ include:
   - docker-compose.superset.yml
 ```
 and then simply run `docker compose up -d`
+
+
+!!! tip "Swarm mode"
+    
+    If you are using Swarm mode, the docker compo will not work and require a few modifications. You can use instead the files from the `swarm` folder.
