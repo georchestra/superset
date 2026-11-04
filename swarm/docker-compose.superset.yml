@@ -21,7 +21,7 @@
 # create you own docker environment file (envs/.envs-superset) with your own
 # unique random secure passwords and SECRET_KEY.
 # -----------------------------------------------------------------------
-x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-00
+x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-01
 x-superset-volumes:
   &superset-volumes
   - superset_home:/app/superset_home
