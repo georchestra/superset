@@ -5,6 +5,7 @@ from datetime import timedelta
 from os import environ
 
 from GeorchestraCustomizations import CustomLoggingConfigurator
+from superset.config import CELERY_CONFIG as DefaultCeleryConfig
 from superset.utils.log import StdOutEventLogger
 
 logger = logging.getLogger(__name__)
@@ -252,6 +253,14 @@ FILTER_STATE_CACHE_CONFIG = {
 
 RATELIMIT_STORAGE_URI = f"{REDIS_BASE_URL}/4"
 RATELIMIT_STORAGE_OPTIONS = {"socket_connect_timeout": 30}
+
+
+class CeleryConfig(DefaultCeleryConfig):
+    broker_url = f"{REDIS_BASE_URL}/0"
+    result_backend = f"{REDIS_BASE_URL}/1"
+
+
+CELERY_CONFIG = CeleryConfig
 
 
 # Optionally import Overrides.py (which will have been included on

@@ -21,31 +21,44 @@
 # create you own docker environment file (envs/.envs-superset) with your own
 # unique random secure passwords and SECRET_KEY.
 # -----------------------------------------------------------------------
-x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-00
+x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-01
 x-superset-volumes:
   &superset-volumes
   - superset_home:/app/superset_home
   - ./config:/etc/georchestra
+x-superset-env-files: &superset-env-files
+  - ./envs/.envs-superset
 
 services:
-  superset_redis:
+  superset-redis:
     image: redis:7
-    container_name: superset_cache
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"] 
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 20s
+    container_name: superset-redis
     restart: unless-stopped
     volumes:
       - redis:/data
 
   superset:
-    env_file:
-      - envs/.envs-superset
     image: *superset-image
-    container_name: superset_app
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -f http://127.0.0.1:8088/superset/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 30s
+      retries: 3
+      start_period: 15s
+    container_name: superset
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
     restart: unless-stopped
     # ports:
     #   - 8088:8088
     volumes: *superset-volumes
+    env_file: *superset-env-files
     environment:
       GUNICORN_KEEPALIVE: "30"
       SERVER_THREADS_AMOUNT: "5"
@@ -54,13 +67,12 @@ services:
 
   superset-init:
     image: *superset-image
-    container_name: superset_init
+    container_name: superset-init
     command: ["/bin/bash", "-c", "cp /etc/georchestra/superset/docker-init.sh /app/docker/docker-init.sh && chmod +x /app/docker/docker-init.sh && /app/docker/docker-init.sh"]
     # command: ["/app/docker/docker-init.sh"]
     deploy:
       mode: global-job
-    env_file:
-      - envs/.envs-superset
+    env_file: *superset-env-files
     user: "root"
     volumes: *superset-volumes
     healthcheck:
@@ -71,31 +83,25 @@ services:
 
   superset-worker:
     image: *superset-image
-    container_name: superset_worker
+    container_name: superset-worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
-    env_file:
-      - envs/.envs-superset
+    env_file: *superset-env-files
     restart: unless-stopped
     user: "root"
     volumes: *superset-volumes
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
-        ]
-    environment:
-      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+      test: [ "CMD", "/bin/bash", "-c", "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME" ]
+      interval: 60s
+      timeout: 60s
+      retries: 3
+      start_period: 120s
 
   superset-worker-beat:
     image: *superset-image
-    container_name: superset_worker_beat
+    container_name: superset-worker-beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
-    env_file:
-      - envs/.envs-superset
+    env_file: *superset-env-files
     restart: unless-stopped
-    depends_on:
-      - superset-init
     user: "root"
     volumes: *superset-volumes
     healthcheck:
