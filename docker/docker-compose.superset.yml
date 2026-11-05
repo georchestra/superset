@@ -18,7 +18,7 @@
 # -----------------------------------------------------------------------
 # We don't support docker compose for production environments.
 # If you choose to use this type of deployment make sure to
-# create you own docker environment file (envs/.envs-superset) with your own
+# create you own docker environment file config/envs/.envs-superset) with your own
 # unique random secure passwords and SECRET_KEY.
 # -----------------------------------------------------------------------
 x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-00
@@ -43,9 +43,9 @@ services:
 
   superset_db:
     env_file:
-      - path: .envs-superset # default
+      - path: ./config/envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./config/envs/.envs-superset-local # optional override
         required: false
     image: postgres:15
     container_name: superset-db
@@ -55,9 +55,9 @@ services:
 
   superset:
     env_file:
-      - path: .envs-superset # default
+      - path: ./config/envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./config/envs/.envs-superset-local # optional override
         required: false
     image: *superset-image
     healthcheck:
@@ -88,9 +88,9 @@ services:
     command: ["/bin/bash", "-c", "cp /etc/georchestra/superset/docker-init.sh /app/docker/docker-init.sh && chmod +x /app/docker/docker-init.sh && /app/docker/docker-init.sh"]
     # command: ["/app/docker/docker-init.sh"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./config/envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./config/envs/.envs-superset-local # optional override
         required: false
     depends_on:
       superset_db:
@@ -110,9 +110,9 @@ services:
     container_name: superset-worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./config/envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./config/envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:
@@ -132,9 +132,9 @@ services:
     container_name: superset-worker-beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./config/envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./config/envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:

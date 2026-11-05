@@ -27,7 +27,7 @@ x-superset-volumes:
   - superset_home:/app/superset_home
   - ./config:/etc/georchestra
 x-superset-env-files: &superset-env-files
-  - ./envs/.envs-superset
+  - ./config/envs/.envs-superset
 
 services:
   superset-redis:
