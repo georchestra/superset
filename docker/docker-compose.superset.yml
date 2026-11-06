@@ -18,7 +18,7 @@
 # -----------------------------------------------------------------------
 # We don't support docker compose for production environments.
 # If you choose to use this type of deployment make sure to
-# create you own docker environment file (.envs-superset) with your own
+# create you own docker environment file config/envs/.envs-superset) with your own
 # unique random secure passwords and SECRET_KEY.
 # -----------------------------------------------------------------------
 x-superset-image: &superset-image georchestra/superset:6.1.0-georchestra-01
@@ -28,33 +28,45 @@ x-superset-volumes:
   - ./config:/etc/georchestra
 
 services:
-  superset_redis:
+  superset-redis:
     image: redis:7
-    container_name: superset_cache
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"]
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 20s
+    container_name: superset-redis
     restart: unless-stopped
     volumes:
       - redis:/data
 
   superset_db:
     env_file:
-      - path: .envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     image: postgres:15
-    container_name: superset_db
+    container_name: superset-db
     restart: unless-stopped
     volumes:
       - db_home:/var/lib/postgresql/data
 
   superset:
     env_file:
-      - path: .envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     image: *superset-image
-    container_name: superset_app
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -f http://127.0.0.1:8088/superset/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 30s
+      retries: 3
+      start_period: 15s
+    container_name: superset
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
     restart: unless-stopped
@@ -72,13 +84,13 @@ services:
 
   superset-init:
     image: *superset-image
-    container_name: superset_init
+    container_name: superset-init
     command: ["/bin/bash", "-c", "cp /etc/georchestra/superset/docker-init.sh /app/docker/docker-init.sh && chmod +x /app/docker/docker-init.sh && /app/docker/docker-init.sh"]
     # command: ["/app/docker/docker-init.sh"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     depends_on:
       superset_db:
@@ -95,12 +107,12 @@ services:
 
   superset-worker:
     image: *superset-image
-    container_name: superset_worker
+    container_name: superset-worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:
@@ -109,22 +121,20 @@ services:
     user: "root"
     volumes: *superset-volumes
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
-        ]
-    environment:
-      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+      test: [ "CMD", "/bin/bash", "-c", "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME" ]
+      interval: 60s
+      timeout: 60s
+      retries: 3
+      start_period: 120s
 
   superset-worker-beat:
     image: *superset-image
-    container_name: superset_worker_beat
+    container_name: superset-worker-beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file:
-      - path: .envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: .envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:

@@ -7,5 +7,5 @@
 
 import os
 
-REDIS_BASE_URL=f'redis://{os.getenv("REDIS_HOST", "superset_redis")}:{os.getenv("REDIS_PORT", 6379)}'
+REDIS_BASE_URL=f'redis://{os.getenv("REDIS_HOST", "superset-redis")}:{os.getenv("REDIS_PORT", 6379)}'
 SQLALCHEMY_DATABASE_URI=f'postgresql://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}/{os.getenv("DATABASE_DB")}?options=-c%20search_path=superset'
