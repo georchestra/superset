@@ -27,13 +27,13 @@ x-superset-volumes:
   - superset_home:/app/superset_home
   - ./config:/etc/georchestra
 x-superset-env-files: &superset-env-files
-  - ./config/envs/.envs-superset
+  - ./envs/.envs-superset
 
 services:
   superset-redis:
     image: redis:7
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"] 
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"]
       interval: 10s
       timeout: 6s
       retries: 5

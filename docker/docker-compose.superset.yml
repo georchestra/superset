@@ -31,7 +31,7 @@ services:
   superset-redis:
     image: redis:7
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"] 
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"]
       interval: 10s
       timeout: 6s
       retries: 5
@@ -43,9 +43,9 @@ services:
 
   superset_db:
     env_file:
-      - path: ./config/envs/.envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: ./config/envs/.envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     image: postgres:15
     container_name: superset-db
@@ -55,9 +55,9 @@ services:
 
   superset:
     env_file:
-      - path: ./config/envs/.envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: ./config/envs/.envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     image: *superset-image
     healthcheck:
@@ -88,9 +88,9 @@ services:
     command: ["/bin/bash", "-c", "cp /etc/georchestra/superset/docker-init.sh /app/docker/docker-init.sh && chmod +x /app/docker/docker-init.sh && /app/docker/docker-init.sh"]
     # command: ["/app/docker/docker-init.sh"]
     env_file:
-      - path: ./config/envs/.envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: ./config/envs/.envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     depends_on:
       superset_db:
@@ -110,9 +110,9 @@ services:
     container_name: superset-worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
-      - path: ./config/envs/.envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: ./config/envs/.envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:
@@ -132,9 +132,9 @@ services:
     container_name: superset-worker-beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file:
-      - path: ./config/envs/.envs-superset # default
+      - path: ./envs/.envs-superset # default
         required: true
-      - path: ./config/envs/.envs-superset-local # optional override
+      - path: ./envs/.envs-superset-local # optional override
         required: false
     restart: unless-stopped
     depends_on:
