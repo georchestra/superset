@@ -165,6 +165,38 @@ EXTRA_SEQUENTIAL_COLOR_SCHEMES = [
     },
 ]
 
+
+################################
+# ThematicMap stuff
+################################
+# Thematic Map does not ship with the full definition of proj.4 projections, but only 4326 ans 3857. If you want more
+# projections to be supported, you have to add them here
+MAP_PROJECTIONS = {
+    'EPSG:2154': '+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
+}
+
+# Default layers that will be added to all visualizations of plugin-chart-cartodiagram.
+# For a list of supported types, and configuration details see the README.md
+# of plugin-chart-cartodiagram.
+# Do think of adding the domains in the CSP exceptions below (security section), or the tiles won't load
+MAP_DEFAULT_LAYERS = [
+   {
+       "type": "XYZ",
+       "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+       "title": "OpenStreetMap",
+       "attribution": "© Map data from <a href=\"openstreetmap.org/copyright\">OpenStreetMap</a>.",
+   },
+]
+# Syntax for a WMS layer would be like
+# {
+#     "type": "WMS",
+#     "version": "1.3.0",
+#     "url": "https://mydomain.fr/geoserver/wms",
+#     "layersParam": "mylayername",
+#     "title": "mytitle",
+#     "attribution": "©Me",
+# },
+
 ################################
 # Web Security config
 ################################
@@ -191,6 +223,7 @@ TALISMAN_CONFIG = {
             "https://www.georchestra.org",
             "https://apachesuperset.gateway.scarf.sh",
             "https://static.scarf.sh/",
+            "https://tile.openstreetmap.org",
             # "https://avatars.slack-edge.com", # Uncomment when SLACK_ENABLE_AVATARS is True  # noqa: E501
         ],
         "worker-src": ["'self'", "blob:"],
@@ -198,6 +231,7 @@ TALISMAN_CONFIG = {
             "'self'",
             "https://api.mapbox.com",
             "https://events.mapbox.com",
+            "https://tile.openstreetmap.org",
         ],
         "object-src": "'none'",
         "style-src": [
